@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.0.10
+
+### Patch Changes
+
+- fe2d340: The DTS Beta
+
 ## 1.0.0
 
 ### Major Changes
