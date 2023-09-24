@@ -4,21 +4,21 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import chalk from 'chalk'
 import { parentPort } from 'node:worker_threads'
 
-console.trace = (start: number, text: string, group?: string) => {
-  const d = new Date().toLocaleString().toUpperCase().replace(', ', ' ')
-  const took = (Date.now() - start) / 1000
-  const tookColor = (took: number) => {
-    if (took < 5) return chalk.greenBright(took + 's')
-    else if (took < 15) return chalk.yellowBright(took + 's')
-    else return chalk.redBright(took + 's')
-  }
+// console.trace = (start: number, text: string, group?: string) => {
+//   const d = new Date().toLocaleString().toUpperCase().replace(', ', ' ')
+//   const took = (Date.now() - start) / 1000
+//   const tookColor = (took: number) => {
+//     if (took < 5) return chalk.greenBright(took + 's')
+//     else if (took < 15) return chalk.yellowBright(took + 's')
+//     else return chalk.redBright(took + 's')
+//   }
 
-  if (group) {
-    console.log(
-      `[${d} ${colorize('debug')}] [${group}] ${text} ${tookColor(took)}`
-    )
-  } else console.log(`[${d} ${colorize('debug')}] ${text} ${tookColor(took)}`)
-}
+//   if (group) {
+//     console.log(
+//       `[${d} ${colorize('debug')}] [${group}] ${text} ${tookColor(took)}`
+//     )
+//   } else console.log(`[${d} ${colorize('debug')}] ${text} ${tookColor(took)}`)
+// }
 
 parentPort?.on('message', (of: string) => {
   Compiler(of).then(() => {
