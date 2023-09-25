@@ -39,17 +39,14 @@ export async function EventManager (client: Bot) {
   const startLoading = Date.now()
 
   const { exportedClasses } = JSON.parse(
-    readFileSync(
-      client.config.eventsDir + '/bundle/events-compiled.json',
-      'utf-8'
-    )
+    readFileSync('./.bundle/events-compiled.json', 'utf-8')
   )
 
   if (!exportedClasses) return
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const allEvents: Record<string, any> = await import(
-    client.config.eventsDir + '/bundle/events-bundled.js'
+    // @ts-ignore
+    '../../bundle/events-bundle.js'
   )
 
   let i = 1

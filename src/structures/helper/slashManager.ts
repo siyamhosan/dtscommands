@@ -42,17 +42,14 @@ export const SlashManager = async (client: Bot) => {
   )
 
   const { exportedClasses } = JSON.parse(
-    readFileSync(
-      client.config.slashCommandsDir + '/bundle/slashCommands-compiled.json',
-      'utf-8'
-    )
+    readFileSync('./.bundle/slashCommands-compiled.json', 'utf-8')
   )
 
   if (!exportedClasses) return
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const allSlashCommands: Record<string, any> = await import(
-    client.config.slashCommandsDir + '/bundle/slashCommands-bundled.js'
+    // @ts-ignore
+    '../../bundle/slashCommands-bundled.js'
   )
 
   let i = 1
@@ -90,17 +87,18 @@ export const SlashManager = async (client: Bot) => {
 
   i = 1
 
-  const allUniCommands: Record<string, any> = await import(
-    client.config.uniCommandsDir + '/bundle/uniCommands-bundled.js'
-  )
   const uniBundle = JSON.parse(
-    readFileSync(
-      client.config.uniCommandsDir + '/bundle/uniCommands-compiled.json',
-      'utf-8'
-    )
+    readFileSync('./.bundle/uniCommands-compiled.json', 'utf-8')
+  )
+
+  if (!uniBundle) return
+  const allUniCommands: Record<string, any> = await import(
+    // @ts-ignore
+    '../../bundle/uniCommands-bundle.js'
   )
 
   const uniClasses = uniBundle.exportedClasses
+  if (!uniClasses) return
 
   for (const uni of uniClasses) {
     const UniClass = allUniCommands[uni]

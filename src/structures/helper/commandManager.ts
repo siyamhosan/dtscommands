@@ -36,17 +36,14 @@ export async function CommandManager (client: Bot) {
   }
 
   const { exportedClasses } = JSON.parse(
-    readFileSync(
-      client.config.commandsDir + '/bundle/commands-compiled.json',
-      'utf-8'
-    )
+    readFileSync('./.bundle/commands-compiled.json', 'utf-8')
   )
 
   if (!exportedClasses) return
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const allCommands: Record<string, any> = await import(
-    client.config.commandsDir + '/bundle/commands-bundled.js'
+    // @ts-ignore
+    '../../bundle/commands-bundle.js'
   )
 
   for (const command of exportedClasses) {
