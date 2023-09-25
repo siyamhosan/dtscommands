@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.0.12
+
+### Patch Changes
+
+- 40e6f7f: chalk esm problem version changed 5.0 -> 4.1.2
+
 ## 0.0.11
 
 ### Patch Changes
