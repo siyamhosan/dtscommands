@@ -41,13 +41,17 @@ class Bot extends Client {
   }
 
   private async compiler () {
-    const cmds = ['events', 'commands', 'uniCommands', 'slashCommands']
-
+    const cmds = [
+      { path: this.config.eventsDir, of: 'events' },
+      { path: this.config.commandsDir, of: 'commands' },
+      { path: this.config.slashCommandsDir, of: 'slashCommands' },
+      { path: this.config.uniCommandsDir, of: 'uniCommands' }
+    ]
     console.debug('Compiling...')
 
     let done = 0
     for (const cmd of cmds) {
-      await Compiler(cmd)
+      await Compiler(cmd.path, cmd.of)
       done++
     }
 
@@ -56,13 +60,13 @@ class Bot extends Client {
 
   public async reloadEvents () {
     this.removeAllListeners()
-    await Compiler('events')
+    await Compiler(this.config.eventsDir, 'events')
     await EventManager(this)
   }
 
   public async reloadCommands () {
     this.commands.clear()
-    await Compiler('commands')
+    await Compiler(this.config.commandsDir, 'commands')
     await CommandManager(this)
   }
 
@@ -70,7 +74,7 @@ class Bot extends Client {
     this.slashCommands.clear()
     this.uniCommands.clear()
     this.subCommands.clear()
-    await Compiler('slashCommands')
+    await Compiler(this.config.slashCommandsDir, 'slashCommands')
     await SlashManager(this)
   }
 
