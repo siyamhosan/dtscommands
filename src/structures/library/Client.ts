@@ -16,6 +16,8 @@ class Bot extends Client {
   public readonly uniCommands: Collection<string, UniCommand>
   // a collections object there people can add their own collections to it then it will be accessible in the client
   public collections: Record<string, Collection<string, unknown>> = {}
+  // a services object there people can add their own services classes to it then it will be accessible in the client
+  public services: Record<string, unknown> = {}
 
   constructor (config?: Config) {
     super({
