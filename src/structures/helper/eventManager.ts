@@ -1,53 +1,22 @@
 /* eslint-disable new-cap */
-import Bot from '../library/Client.js'
 import chalk from 'chalk'
-import { TableUserConfig, table } from 'table'
-import { Event } from '../base/index.js'
 import { ClientEvents } from 'discord.js'
-import { readFileSync } from 'fs'
+import { table } from 'table'
+import { TableConfig } from '../base/Config.js'
+import { Event } from '../base/index.js'
+import Bot from '../library/Client.js'
 
-export async function EventManager (client: Bot) {
+export async function EventManager (
+  client: Bot,
+  exportedClasses: string[],
+  allEvents: Record<string, any>
+) {
   const contents = [['No.', 'Name', 'Nick']]
-  const config: TableUserConfig = {
-    drawHorizontalLine: (lineIndex: number, rowCount: number) => {
-      return lineIndex === 1 || lineIndex === 0 || lineIndex === rowCount
-    },
-
-    border: {
-      topBody: chalk.gray('─'),
-      topJoin: chalk.gray('┬'),
-      topLeft: chalk.gray('┌'),
-      topRight: chalk.gray('┐'),
-
-      bottomBody: chalk.gray('─'),
-      bottomJoin: chalk.gray('┴'),
-      bottomLeft: chalk.gray('└'),
-      bottomRight: chalk.gray('┘'),
-
-      bodyLeft: chalk.gray('│'),
-      bodyRight: chalk.gray('│'),
-      bodyJoin: chalk.gray('│'),
-
-      joinBody: chalk.gray('─'),
-      joinLeft: chalk.gray('├'),
-      joinRight: chalk.gray('┤'),
-      joinJoin: chalk.gray('┼')
-    }
-  }
 
   console.info(chalk.bold('Loading Events...'), chalk.bold('evt'))
   const startLoading = Date.now()
 
-  const { exportedClasses } = JSON.parse(
-    readFileSync('./.bundle/events-compiled.json', 'utf-8')
-  )
-
   if (!exportedClasses) return
-
-  const allEvents: Record<string, any> = await import(
-    // @ts-ignore
-    '../../bundle/events-bundle.js'
-  )
 
   let i = 1
   for (const event of exportedClasses) {
@@ -80,7 +49,7 @@ export async function EventManager (client: Bot) {
     }
   }
 
-  table(contents, config)
+  table(contents, TableConfig)
     .split('\n')
     .forEach(text => {
       console.info(text, chalk.bold('evt'))

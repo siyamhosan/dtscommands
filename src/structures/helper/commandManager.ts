@@ -1,50 +1,19 @@
-import Bot from '../library/Client.js'
 import chalk from 'chalk'
-import { TableUserConfig, table } from 'table'
-import { readFileSync } from 'fs'
+import { table } from 'table'
+import { TableConfig } from '../base/Config.js'
+import Bot from '../library/Client.js'
 
-export async function CommandManager (client: Bot) {
+export async function CommandManager (
+  client: Bot,
+  exportedClasses: string[],
+  allCommands: Record<string, any>
+) {
   console.info(chalk.bold('Loading Prefix Commands...'), chalk.bold('pre'))
   const startLoading = Date.now()
 
   const contents = [['No.', 'Name', 'Category']]
-  const config: TableUserConfig = {
-    drawHorizontalLine: (lineIndex: number, rowCount: number) => {
-      return lineIndex === 1 || lineIndex === 0 || lineIndex === rowCount
-    },
-
-    border: {
-      topBody: chalk.gray('─'),
-      topJoin: chalk.gray('┬'),
-      topLeft: chalk.gray('┌'),
-      topRight: chalk.gray('┐'),
-
-      bottomBody: chalk.gray('─'),
-      bottomJoin: chalk.gray('┴'),
-      bottomLeft: chalk.gray('└'),
-      bottomRight: chalk.gray('┘'),
-
-      bodyLeft: chalk.gray('│'),
-      bodyRight: chalk.gray('│'),
-      bodyJoin: chalk.gray('│'),
-
-      joinBody: chalk.gray('─'),
-      joinLeft: chalk.gray('├'),
-      joinRight: chalk.gray('┤'),
-      joinJoin: chalk.gray('┼')
-    }
-  }
-
-  const { exportedClasses } = JSON.parse(
-    readFileSync('./.bundle/commands-compiled.json', 'utf-8')
-  )
 
   if (!exportedClasses) return
-
-  const allCommands: Record<string, any> = await import(
-    // @ts-ignore
-    '../../bundle/commands-bundle.js'
-  )
 
   for (const command of exportedClasses) {
     const CommandClass = allCommands[command]
@@ -70,7 +39,7 @@ export async function CommandManager (client: Bot) {
       ])
     }
   }
-  table(contents, config)
+  table(contents, TableConfig)
     .split('\n')
     .forEach(text => {
       console.info(text, chalk.bold('pre'))

@@ -1,38 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import chalk from 'chalk'
 import { REST, Routes, SlashCommandBuilder } from 'discord.js'
-import { readFileSync } from 'node:fs'
-import { TableUserConfig, table } from 'table'
+import { table } from 'table'
+import { TableConfig } from '../base/Config.js'
 import Bot from '../library/Client.js'
 
-export const SlashManager = async (client: Bot) => {
+export const SlashManager = async (
+  client: Bot,
+  exportedClasses: string[],
+  allSlashCommands: Record<string, any>
+) => {
   const contents = [['No.', 'Name', 'Type']]
-  const config: TableUserConfig = {
-    drawHorizontalLine: (lineIndex: number, rowCount: number) => {
-      return lineIndex === 1 || lineIndex === 0 || lineIndex === rowCount
-    },
-
-    border: {
-      topBody: chalk.gray('─'),
-      topJoin: chalk.gray('┬'),
-      topLeft: chalk.gray('┌'),
-      topRight: chalk.gray('┐'),
-
-      bottomBody: chalk.gray('─'),
-      bottomJoin: chalk.gray('┴'),
-      bottomLeft: chalk.gray('└'),
-      bottomRight: chalk.gray('┘'),
-
-      bodyLeft: chalk.gray('│'),
-      bodyRight: chalk.gray('│'),
-      bodyJoin: chalk.gray('│'),
-
-      joinBody: chalk.gray('─'),
-      joinLeft: chalk.gray('├'),
-      joinRight: chalk.gray('┤'),
-      joinJoin: chalk.gray('┼')
-    }
-  }
 
   const startTime = Date.now()
 
@@ -41,16 +19,7 @@ export const SlashManager = async (client: Bot) => {
     chalk.bold('sla')
   )
 
-  const { exportedClasses } = JSON.parse(
-    readFileSync('./.bundle/slashCommands-compiled.json', 'utf-8')
-  )
-
   if (!exportedClasses) return
-
-  const allSlashCommands: Record<string, any> = await import(
-    // @ts-ignore
-    '../../bundle/slashCommands-bundled.js'
-  )
 
   let i = 1
   const data: SlashCommandBuilder[] = []
@@ -85,32 +54,7 @@ export const SlashManager = async (client: Bot) => {
     ])
   }
 
-  i = 1
-
-  const uniBundle = JSON.parse(
-    readFileSync('./.bundle/uniCommands-compiled.json', 'utf-8')
-  )
-
-  if (!uniBundle) return
-  const allUniCommands: Record<string, any> = await import(
-    // @ts-ignore
-    '../../bundle/uniCommands-bundle.js'
-  )
-
-  const uniClasses = uniBundle.exportedClasses
-  if (!uniClasses) return
-
-  for (const uni of uniClasses) {
-    const UniClass = allUniCommands[uni]
-    const uniInstance = new UniClass(client)
-
-    client.uniCommands.set(uniInstance.slash.name, uniInstance)
-    data.push(uniInstance.slash)
-
-    contents.push([String(`${i++}.`), uniInstance.slash.name, 'Uni'])
-  }
-
-  await table(contents, config)
+  table(contents, TableConfig)
     .split('\n')
     .forEach(text => {
       console.info(text, chalk.bold('sla'))
@@ -118,7 +62,7 @@ export const SlashManager = async (client: Bot) => {
 
   console.trace(
     startTime,
-    chalk.bold('Loaded Slash And Uni Commands In '),
+    chalk.bold('Loaded Slash Commands In '),
     chalk.bold('sla')
   )
 

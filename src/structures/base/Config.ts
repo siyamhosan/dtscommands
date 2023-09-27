@@ -1,5 +1,7 @@
+import chalk from 'chalk'
 import { GatewayIntentBits, Partials } from 'discord.js'
 import path from 'path'
+import { TableUserConfig } from 'table'
 
 export type Manager = {
   guildId: string
@@ -86,5 +88,32 @@ export const defaultConfig: Required<Config> = {
   slashCommandsDir: path.join(__dirname, 'src/main/commands/slashCommands'),
   mentionMessage: {
     content: 'My prefix is `!`'
+  }
+}
+
+export const TableConfig: TableUserConfig = {
+  drawHorizontalLine: (lineIndex: number, rowCount: number) => {
+    return lineIndex === 1 || lineIndex === 0 || lineIndex === rowCount
+  },
+
+  border: {
+    topBody: chalk.gray('─'),
+    topJoin: chalk.gray('┬'),
+    topLeft: chalk.gray('┌'),
+    topRight: chalk.gray('┐'),
+
+    bottomBody: chalk.gray('─'),
+    bottomJoin: chalk.gray('┴'),
+    bottomLeft: chalk.gray('└'),
+    bottomRight: chalk.gray('┘'),
+
+    bodyLeft: chalk.gray('│'),
+    bodyRight: chalk.gray('│'),
+    bodyJoin: chalk.gray('│'),
+
+    joinBody: chalk.gray('─'),
+    joinLeft: chalk.gray('├'),
+    joinRight: chalk.gray('┤'),
+    joinJoin: chalk.gray('┼')
   }
 }
