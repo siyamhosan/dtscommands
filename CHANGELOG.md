@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.0.16
+
+### Patch Changes
+
+- 4713262: Compiler file text fix
+
 ## 0.0.15
 
 ### Patch Changes
