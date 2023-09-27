@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.0.17
+
+### Patch Changes
+
+- c74852b: Dynamic Import
+
 ## 0.0.16
 
 ### Patch Changes
