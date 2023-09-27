@@ -1,5 +1,13 @@
 # bkash-payment-api
 
+## 0.0.14
+
+### Patch Changes
+
+- 52300f8: compiler test 2
+- 6dc31b7: comiper test
+- 30f8f84: versioning
+
 ## 0.0.12
 
 ### Patch Changes
