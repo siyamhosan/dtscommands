@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.0.18
+
+### Patch Changes
+
+- aba19f5: Added Client Services
+
 ## 0.0.17
 
 ### Patch Changes
