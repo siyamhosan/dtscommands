@@ -2,6 +2,9 @@ import chalk from 'chalk'
 import { readFileSync } from 'node:fs'
 import { readdir, stat } from 'node:fs/promises'
 
+export const DynamicImport = async (path: string) =>
+  await import(path).catch(console.error)
+
 export type compilerResult = {
   exportedClasses: string[]
   file: string
