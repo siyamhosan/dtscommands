@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.1.0
+
+### Minor Changes
+
+- 43a5991: Compiler Ignore Self Import
+
 ## 0.0.19
 
 ### Patch Changes
