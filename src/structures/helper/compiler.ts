@@ -37,7 +37,8 @@ export async function Compiler (
       if (className && className[1]) {
         exportedClasses.push(className[1])
       }
-      bundledContent += eventContent + '\n'
+      bundledContent +=
+        `// Content From ${path}/${dir}/${file}` + eventContent + '\n'
       fileCount++
       filesPaths.push(`${path}/${dir}/${file}`)
     }
@@ -135,6 +136,8 @@ function mergeImports (imports: string[]): string[] {
   const mergedImports = []
 
   for (const { importNames, importPath, isDefault } of fileredImportsData) {
+    if (/'.\/[\W]+.js'/i.test(importPath)) continue
+
     if (!isDefault) {
       mergedImports.push(`import {${importNames.join(',')}} from ${importPath}`)
     } else {
