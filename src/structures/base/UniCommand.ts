@@ -16,6 +16,10 @@ export interface UniCommandRun {
   prefix: string
 }
 
+/**
+ * "UniCommand" is a command that can be used in both slash commands and normal commands.
+ * @deprecated
+ */
 export abstract class UniCommand {
   readonly command: CommandOptions
   readonly slash: SlashCommandBuilder

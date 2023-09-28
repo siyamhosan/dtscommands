@@ -5,16 +5,16 @@ import {
   ButtonStyle,
   ChatInputCommandInteraction,
   Colors,
-  CommandInteraction,
   CommandInteractionOptionResolver,
   EmbedBuilder,
+  PermissionResolvable,
   PermissionsBitField,
   SlashCommandBuilder
 } from 'discord.js'
 import Bot from '../library/Client.js'
 
 export interface SlashCommandRun {
-  interaction: CommandInteraction
+  interaction: ChatInputCommandInteraction
   options: Omit<CommandInteractionOptionResolver, 'getMessage' | 'getFocused'>
   client: Bot
 }
@@ -23,7 +23,7 @@ export interface SlashCommandOptions {
   data?: SlashCommandBuilder | undefined
   subCommand?: string | undefined
   manager?: boolean
-  botPerms?: PermissionsBitField[]
+  botPerms?: PermissionResolvable[]
   beta?: boolean
 }
 
@@ -31,7 +31,7 @@ export abstract class SlashCommand {
   readonly data: SlashCommandBuilder | undefined
   readonly subCommand: string | undefined
   readonly manager: boolean
-  readonly botPerms: PermissionsBitField[]
+  readonly botPerms: PermissionResolvable[]
   readonly beta: boolean
 
   constructor (options: SlashCommandOptions) {

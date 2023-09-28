@@ -1,4 +1,9 @@
-import { EmbedBuilder, Message, PermissionsBitField } from 'discord.js'
+import {
+  EmbedBuilder,
+  Message,
+  PermissionsBitField,
+  PermissionResolvable
+} from 'discord.js'
 import Bot from '../library/Client.js'
 
 export interface CommandRun {
@@ -15,8 +20,8 @@ export interface CommandOptions {
   args?: boolean
   usage?: string
   aliases?: string[]
-  userPerms?: PermissionsBitField[] | bigint[]
-  botPerms?: PermissionsBitField[]
+  userPerms?: PermissionResolvable[]
+  botPerms?: PermissionResolvable[]
   owner?: boolean
   manager?: boolean
   beta?: boolean
@@ -29,8 +34,8 @@ export abstract class Command {
   readonly args: boolean
   readonly usage: string
   readonly aliases: string[]
-  readonly userPerms: PermissionsBitField[] | bigint[]
-  readonly botPerms: PermissionsBitField[]
+  readonly userPerms: PermissionResolvable[]
+  readonly botPerms: PermissionResolvable[]
   readonly owner: boolean
   readonly manager: boolean
   readonly beta: boolean

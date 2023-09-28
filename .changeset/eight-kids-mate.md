@@ -1,0 +1,5 @@
+---
+"dtscommands": patch
+---
+
+Intrection types
