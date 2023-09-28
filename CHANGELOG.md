@@ -1,5 +1,12 @@
 # bkash-payment-api
 
+## 0.0.19
+
+### Patch Changes
+
+- 49adbf5: Intrection types
+- 49adbf5: Permission type error fixed
+
 ## 0.0.18
 
 ### Patch Changes
