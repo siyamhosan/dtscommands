@@ -44,6 +44,7 @@ export type Config = {
   uniCommandsDir: string
   slashCommandsDir: string
   mentionMessage?: MentionMessage
+  cooldown?: number
 }
 
 export const defaultConfig: Required<Config> = {
@@ -88,7 +89,8 @@ export const defaultConfig: Required<Config> = {
   slashCommandsDir: path.join(__dirname, 'src/main/commands/slashCommands'),
   mentionMessage: {
     content: 'My prefix is `!`'
-  }
+  },
+  cooldown: 3
 }
 
 export const TableConfig: TableUserConfig = {
