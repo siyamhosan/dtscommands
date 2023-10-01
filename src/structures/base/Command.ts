@@ -1,8 +1,8 @@
 import {
   EmbedBuilder,
   Message,
-  PermissionsBitField,
-  PermissionResolvable
+  PermissionResolvable,
+  PermissionsBitField
 } from 'discord.js'
 import Bot from '../library/Client.js'
 
@@ -25,6 +25,10 @@ export interface CommandOptions {
   owner?: boolean
   manager?: boolean
   beta?: boolean
+  /**
+   *  @beta
+   */
+  validation?: string[]
 }
 
 export abstract class Command {
@@ -39,6 +43,7 @@ export abstract class Command {
   readonly owner: boolean
   readonly manager: boolean
   readonly beta: boolean
+  readonly validation: string[]
 
   constructor (options: CommandOptions) {
     this.name = options.name
@@ -52,6 +57,7 @@ export abstract class Command {
     this.owner = options.owner || false
     this.manager = options.manager || false
     this.beta = options.beta || false
+    this.validation = options.validation || []
   }
 
   public abstract run(options: CommandRun): void
@@ -150,5 +156,26 @@ export async function CommandValidator (
     message.channel.send({ embeds: [embed] })
     return true
   }
+
+  if (command.validation.length > 0) {
+    for (const validation of command.validation) {
+      const customValidation = client.config.customValidations?.find(
+        customValidation => customValidation.name === validation
+      )
+      if (!customValidation) continue
+
+      if (
+        !customValidation.validate({
+          message,
+          interaction: undefined
+        })
+      ) {
+        embed.setDescription(customValidation.onFail)
+        message.channel.send({ embeds: [embed] })
+        return true
+      }
+    }
+  }
+
   return false
 }

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { GatewayIntentBits, Partials } from 'discord.js'
+import { GatewayIntentBits, Interaction, Message, Partials } from 'discord.js'
 import path from 'path'
 import { TableUserConfig } from 'table'
 
@@ -20,6 +20,18 @@ export type MentionMessage = {
   content: string
   embeds?: any[]
   components?: any[]
+}
+
+export type CustomValidations = {
+  validate: ({
+    message,
+    interaction
+  }: {
+    message?: Message
+    interaction?: Interaction
+  }) => boolean
+  onFail: string
+  name: string
 }
 
 export type Config = {
@@ -45,6 +57,7 @@ export type Config = {
   slashCommandsDir: string
   mentionMessage?: MentionMessage
   cooldown?: number
+  customValidations?: CustomValidations[]
 }
 
 export const defaultConfig: Required<Config> = {
@@ -90,7 +103,8 @@ export const defaultConfig: Required<Config> = {
   mentionMessage: {
     content: 'My prefix is `!`'
   },
-  cooldown: 3
+  cooldown: 3,
+  customValidations: []
 }
 
 export const TableConfig: TableUserConfig = {
