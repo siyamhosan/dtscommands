@@ -1,4 +1,5 @@
 import {
+  Collection,
   EmbedBuilder,
   Message,
   PermissionResolvable,
@@ -63,6 +64,8 @@ export abstract class Command {
   public abstract run(options: CommandRun): void
 }
 
+const Cooldown = new Collection<string, Date>()
+
 export async function CommandValidator (
   message: Message,
   prefix: string,
@@ -70,6 +73,37 @@ export async function CommandValidator (
   command: Command,
   client: Bot
 ): Promise<boolean> {
+  const getCooldownTime = () => {
+    const cooldown = new Date()
+    cooldown.setMilliseconds(
+      cooldown.getMilliseconds() + client.config.cooldown * 1000
+    )
+    return cooldown
+  }
+
+  if (Cooldown.has(message.author.id)) {
+    const cooldown = Cooldown.get(message.author.id)
+    if (cooldown) {
+      const now = new Date()
+      const diff = now.getTime() - cooldown.getTime()
+      const seconds = Math.floor(diff / 1000)
+      const time = client.config.cooldown - seconds
+      const embed = new EmbedBuilder()
+        .setColor(client.config.themeColors.ERROR)
+        .setTitle('Cooldown')
+      embed.setDescription(
+        `You are on cooldown, please wait **${time}** seconds before using this command again.`
+      )
+      message.channel.send({ embeds: [embed] })
+      return true
+    }
+  }
+
+  Cooldown.set(message.author.id, getCooldownTime())
+  setTimeout(() => {
+    Cooldown.delete(message.author.id)
+  }, client.config.cooldown * 1000)
+
   if (
     !message.guild?.members.me?.permissions.has(
       PermissionsBitField.resolve('SendMessages')

@@ -3,8 +3,6 @@ import { Collection, Message } from 'discord.js'
 import { CommandValidator, Event, UniCommandValidator } from '../base/index.js'
 import Bot from '../library/Client.js'
 
-const Cooldown = new Collection<string, boolean>()
-
 export class CommandsEvent extends Event<'messageCreate'> {
   private client: Bot
 
@@ -20,13 +18,6 @@ export class CommandsEvent extends Event<'messageCreate'> {
     if (message.author.bot) return
     const client = this.client
     const prefix = client.config.prefix
-
-    if (Cooldown.has(message.author.id)) return message.reply('Cooldown ¬!!')
-
-    Cooldown.set(message.author.id, true)
-    setTimeout(() => {
-      Cooldown.delete(message.author.id)
-    }, client.config.cooldown * 1000)
 
     const mention = new RegExp(`^<@!?${client.user?.id}>( |)$`)
     if (message.content.match(mention)) {
