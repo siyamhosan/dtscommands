@@ -88,13 +88,25 @@ export async function CommandValidator (
       const diff = now.getTime() - cooldown.getTime()
       const seconds = Math.floor(diff / 1000)
       const time = client.config.cooldown - seconds
+      const cooldownTime = new Date()
+      cooldownTime.setSeconds(cooldownTime.getSeconds() + time)
+
       const embed = new EmbedBuilder()
         .setColor(client.config.themeColors.ERROR)
         .setTitle('Cooldown')
       embed.setDescription(
-        `You are on cooldown, please wait **${time}** seconds before using this command again.`
+        `You are on cooldown, please wait <t:${Math.floor(
+          cooldownTime.getTime() / 1000
+        )}:R> seconds before using this command again.`
       )
-      message.channel.send({ embeds: [embed] })
+      message.channel
+        .send({ embeds: [embed] })
+        .then(msg => {
+          setTimeout(() => {
+            msg.delete()
+          }, cooldownTime.getTime() - Date.now())
+        })
+        .catch(() => {})
       return true
     }
   }
