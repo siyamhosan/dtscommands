@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.1.4
+
+### Patch Changes
+
+- 39127a6: Cooldown Fixed
+
 ## 0.1.3
 
 ### Patch Changes
