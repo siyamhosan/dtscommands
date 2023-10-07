@@ -33,7 +33,7 @@ export async function Compiler (
     for (const file of files) {
       if (!(await stat(`${path}/${dir}/${file}`)).isFile()) continue
       const eventContent = readFileSync(`${path}/${dir}/${file}`, 'utf-8')
-      const className = eventContent.match(/export\s+class\s+(\w+)/)
+      const className = eventContent.match(/export\s+class\s+(\w+)/gm)
       if (className && className[1]) {
         exportedClasses.push(className[1])
       }

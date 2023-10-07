@@ -30,7 +30,11 @@ export class CommandsEvent extends Event<'messageCreate'> {
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
     const prefixRegex = new RegExp(
-      `^(<@!?${client.user?.id}>|${escapeRegex(prefix)})\\s*`
+      `^(<@!?${client.user?.id}>|${escapeRegex(prefix)}${
+        client.config.additionalPrefixes.length > 0
+          ? `|${client.config.additionalPrefixes.map(escapeRegex).join('|')}`
+          : ''
+      })\\s*`
     )
     if (!prefixRegex.test(message.content)) return
 

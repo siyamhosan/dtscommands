@@ -51,6 +51,7 @@ export type Config = {
   managers?: Manager[]
   themeColors?: ThemeColors
   prefix: string
+  additionalPrefixes?: string[]
   commandsDir: string
   eventsDir: string
   uniCommandsDir: string
@@ -89,6 +90,7 @@ export const defaultConfig: Required<Config> = {
   beteTesters: [],
   managers: [],
   prefix: '!',
+  additionalPrefixes: [],
   themeColors: {
     SUCCESS: 0x00ff00,
     ERROR: 0xff0000,
