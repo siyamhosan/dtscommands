@@ -1,6 +1,8 @@
 import chalk from 'chalk'
-import { Collection, Message } from 'discord.js'
-import { CommandValidator, Event, UniCommandValidator } from '../base/index.js'
+import { Message } from 'discord.js'
+import { CommandValidator } from '../base/Command.js'
+import { Event } from '../base/Event.js'
+import { UniCommandValidator } from '../base/UniCommand.js'
 import Bot from '../library/Client.js'
 
 export class CommandsEvent extends Event<'messageCreate'> {

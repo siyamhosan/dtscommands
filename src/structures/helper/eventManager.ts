@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import { ClientEvents } from 'discord.js'
 import { table } from 'table'
 import { TableConfig } from '../base/Config.js'
-import { Event } from '../base/index.js'
+import { Event } from '../base/Event.js'
 import Bot from '../library/Client.js'
 
 export async function EventManager (

@@ -1,9 +1,7 @@
 import { Interaction } from 'discord.js'
-import {
-  Event,
-  SlashCommandValidator,
-  UniCommandValidator
-} from '../base/index.js'
+import { Event } from '../base/Event.js'
+import { UniCommandValidator } from '../base/UniCommand.js'
+import { SlashCommandValidator } from '../base/SlashCommand.js'
 import Bot from '../library/Client.js'
 
 export class InteractionCommandEvent extends Event<'interactionCreate'> {
@@ -25,7 +23,7 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
     const subCommand = interaction.options.getSubcommand(false)
     const uniCommand = client.uniCommands.get(interaction.commandName)
     if (slashCommand) {
-      SlashCommandValidator(interaction, slashCommand)
+      SlashCommandValidator(interaction, slashCommand, this.client)
 
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -54,7 +52,7 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
           ephemeral: true
         })
       }
-      SlashCommandValidator(interaction, subCommandFile)
+      SlashCommandValidator(interaction, subCommandFile, this.client)
 
       try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment

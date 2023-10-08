@@ -216,8 +216,16 @@ export async function CommandValidator (
           interaction: undefined
         })
       ) {
-        embed.setDescription(customValidation.onFail)
-        message.channel.send({ embeds: [embed] })
+        if (typeof customValidation.onFail === 'string') {
+          embed.setDescription(customValidation.onFail)
+          message.channel.send({ embeds: [embed] })
+        } else if (customValidation.onFail instanceof EmbedBuilder) {
+          if (customValidation.onFail.toJSON().color === undefined)
+            customValidation.onFail.setColor(client.config.themeColors.ERROR)
+
+          message.channel.send({ embeds: [customValidation.onFail] })
+        }
+
         return true
       }
     }

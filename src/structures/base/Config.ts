@@ -1,5 +1,12 @@
 import chalk from 'chalk'
-import { GatewayIntentBits, Interaction, Message, Partials } from 'discord.js'
+import {
+  APIEmbed,
+  GatewayIntentBits,
+  Interaction,
+  JSONEncodable,
+  Message,
+  Partials
+} from 'discord.js'
 import path from 'path'
 import { TableUserConfig } from 'table'
 
@@ -30,7 +37,7 @@ export type CustomValidations = {
     message?: Message
     interaction?: Interaction
   }) => boolean
-  onFail: string
+  onFail: string | (JSONEncodable<APIEmbed> | APIEmbed)
   name: string
 }
 

@@ -7,7 +7,7 @@ import {
   User
 } from 'discord.js'
 import Bot from '../library/Client.js'
-import { CommandOptions } from './index.js'
+import { CommandOptions } from './Command.js'
 
 export interface UniCommandRun {
   ctx: ChatInputCommandInteraction | Message

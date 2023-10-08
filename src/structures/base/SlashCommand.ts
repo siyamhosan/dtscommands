@@ -25,6 +25,10 @@ export interface SlashCommandOptions {
   manager?: boolean
   botPerms?: PermissionResolvable[]
   beta?: boolean
+  /**
+   *  @beta
+   */
+  validation?: string[]
 }
 
 export abstract class SlashCommand {
@@ -33,6 +37,7 @@ export abstract class SlashCommand {
   readonly manager: boolean
   readonly botPerms: PermissionResolvable[]
   readonly beta: boolean
+  readonly validation: string[]
 
   constructor (options: SlashCommandOptions) {
     this.data = options.data || undefined
@@ -40,6 +45,7 @@ export abstract class SlashCommand {
     this.manager = options.manager || false
     this.botPerms = options.botPerms || []
     this.beta = options.beta || false
+    this.validation = options.validation || []
   }
 
   public abstract run?(options: SlashCommandRun): void
@@ -47,7 +53,8 @@ export abstract class SlashCommand {
 
 export async function SlashCommandValidator (
   interaction: ChatInputCommandInteraction,
-  cmd: SlashCommand
+  cmd: SlashCommand,
+  client: Bot
 ): Promise<boolean> {
   const embed = new EmbedBuilder().setColor(Colors.Red)
   if (cmd.botPerms) {
@@ -90,6 +97,70 @@ export async function SlashCommandValidator (
             new ActionRowBuilder().addComponents(fixPermissionsButton)
           ]
         })
+        return true
+      }
+    }
+  }
+
+  if (cmd.beta) {
+    if (
+      !client.config.beteTesters?.includes(interaction.user.id) &&
+      !client.config.owners?.includes(interaction.user.id)
+    ) {
+      embed.setDescription(`This command is in beta testing.`)
+      if (interaction.replied) {
+        interaction.editReply({
+          embeds: [embed]
+        })
+        return true
+      } else {
+        interaction.reply({
+          embeds: [embed]
+        })
+        return true
+      }
+    }
+  }
+
+  if (cmd.validation.length > 0) {
+    for (const validation of cmd.validation) {
+      const customValidation = client.config.customValidations?.find(
+        customValidation => customValidation.name === validation
+      )
+      if (!customValidation) continue
+
+      if (
+        !customValidation.validate({
+          message: undefined,
+          interaction
+        })
+      ) {
+        if (typeof customValidation.onFail === 'string') {
+          embed.setDescription(customValidation.onFail)
+          if (interaction.replied) {
+            interaction.editReply({
+              embeds: [embed]
+            })
+          } else {
+            interaction.reply({
+              embeds: [embed]
+            })
+          }
+        } else if (customValidation.onFail instanceof EmbedBuilder) {
+          if (customValidation.onFail.toJSON().color === undefined)
+            customValidation.onFail.setColor(client.config.themeColors.ERROR)
+
+          if (interaction.replied) {
+            interaction.editReply({
+              embeds: [customValidation.onFail]
+            })
+          } else {
+            interaction.reply({
+              embeds: [customValidation.onFail]
+            })
+          }
+        }
+
         return true
       }
     }
