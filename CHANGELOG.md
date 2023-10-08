@@ -1,5 +1,12 @@
 # bkash-payment-api
 
+## 0.1.8
+
+### Patch Changes
+
+- 2cc8170: Imports Manages
+- ac4efb0: Custom Validation Message Changeable
+
 ## 0.1.7
 
 ### Patch Changes
