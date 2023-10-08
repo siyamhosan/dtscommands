@@ -1,48 +1,81 @@
 import 'dotenv/config'
-import Bot from './structures/library/Client.js'
+
+// base structures
 import {
   Command,
   CommandOptions,
   CommandRun,
-  CommandValidator,
-  UniCommand,
-  UniCommandRun,
-  UniCommandValidator,
-  SlashCommand,
-  SlashCommandRun,
-  SlashCommandValidator,
-  Config,
-  defaultConfig,
-  Event,
-  EventOptions
-} from './structures/base/index.js'
-
+  CommandValidator
+} from './structures/base/Command.js'
 import {
-  CommandManager,
+  Config,
+  CustomValidations,
+  Manager,
+  MentionMessage,
+  TableConfig,
+  ThemeColors,
+  defaultConfig
+} from './structures/base/Config.js'
+import { Event, EventOptions } from './structures/base/Event.js'
+import {
+  SlashCommand,
+  SlashCommandOptions,
+  SlashCommandRun,
+  SlashCommandValidator
+} from './structures/base/SlashCommand.js'
+import {
+  UniCommandRun,
+  UniCommandValidator
+} from './structures/base/UniCommand.js'
+
+// events
+
+// helpers
+import { CommandManager } from './structures/helper/commandManager.js'
+import {
   Compiler,
-  EventManager,
-  SlashManager
-} from './structures/helper/index.js'
+  DynamicImport,
+  compilerResult
+} from './structures/helper/compiler.js'
+import { EventManager } from './structures/helper/eventManager.js'
+import { SlashManager } from './structures/helper/slashManager.js'
+
+// library
+import Bot from './structures/library/Client.js'
+import Logger from './structures/library/Logger.js'
 
 export {
+  // base structures
   Command,
   CommandOptions,
   CommandRun,
   CommandValidator,
-  UniCommand,
-  UniCommandRun,
-  UniCommandValidator,
-  SlashCommand,
-  SlashCommandRun,
-  SlashCommandValidator,
   Config,
+  CustomValidations,
+  Manager,
+  MentionMessage,
+  TableConfig,
+  ThemeColors,
   defaultConfig,
   Event,
   EventOptions,
+  SlashCommand,
+  SlashCommandOptions,
+  SlashCommandRun,
+  SlashCommandValidator,
+  UniCommandRun,
+  UniCommandValidator,
+  // events
+  // helpers
   CommandManager,
   Compiler,
+  DynamicImport,
+  compilerResult,
   EventManager,
   SlashManager,
-  Bot
+  // library
+  Bot,
+  Logger
 }
+
 export default Bot
