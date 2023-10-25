@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.1.9
+
+### Patch Changes
+
+- 4716ebf: Validation Priority | Del Utils added
+
 ## 0.1.8
 
 ### Patch Changes
