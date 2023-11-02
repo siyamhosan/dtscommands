@@ -20,7 +20,9 @@ export interface SlashCommandRun {
 }
 
 export interface SlashCommandOptions {
-  data?: SlashCommandBuilder | undefined
+  data?:
+    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+    | undefined
   subCommand?: string | undefined
   manager?: boolean
   botPerms?: PermissionResolvable[]
@@ -32,7 +34,9 @@ export interface SlashCommandOptions {
 }
 
 export abstract class SlashCommand {
-  readonly data: SlashCommandBuilder | undefined
+  readonly data:
+    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
+    | undefined
   readonly subCommand: string | undefined
   readonly manager: boolean
   readonly botPerms: PermissionResolvable[]

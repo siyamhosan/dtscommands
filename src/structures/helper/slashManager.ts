@@ -46,8 +46,6 @@ export const SlashManager = async (
 
     const slashInstance = new SlashClass(client)
 
-    console.debug('Loaded Instance', slashInstance.name, 'sla')
-
     if (slashInstance.subCommand) {
       contents.push([
         String(`${i++}.`),
