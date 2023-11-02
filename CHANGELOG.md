@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.2.0
+
+### Minor Changes
+
+- 6f68a18: Slash Command Type Fixed | Debug Removed
+
 ## 0.1.12
 
 ### Patch Changes
