@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.1.12
+
+### Patch Changes
+
+- 0eff620: Fixed Slash Command Manager
+
 ## 0.1.11
 
 ### Patch Changes
