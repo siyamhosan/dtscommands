@@ -19,7 +19,16 @@ export const SlashManager = async (
     chalk.bold('sla')
   )
 
-  if (!exportedClasses) return
+  if (
+    !exportedClasses ||
+    typeof exportedClasses !== 'object' ||
+    !exportedClasses.length
+  ) {
+    console.error(
+      'Failed to load slash commands from bundle, skipping slash...'
+    )
+    return
+  }
 
   let i = 1
   const data: SlashCommandBuilder[] = []

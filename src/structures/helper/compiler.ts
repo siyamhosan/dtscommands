@@ -137,7 +137,6 @@ function mergeImports (imports: string[]): string[] {
 
   for (const { importNames, importPath, isDefault } of fileredImportsData) {
     // ./transcript.js like this then skip
-    console.log(importPath)
     if (/'\.\/[\w]+\.js'/.test(importPath)) continue
 
     if (!isDefault) {
