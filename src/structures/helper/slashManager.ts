@@ -37,14 +37,22 @@ export const SlashManager = async (
 
     if (!SlashClass || typeof SlashClass !== 'function') {
       console.error(
-        `Failed to load slash command ${slash} from bundle, skipping...`
+        `Failed to load slash command ${slash} from bundle, skipping...`,
+        'sla'
       )
       continue
     }
 
     const slashInstance = new SlashClass(client)
 
+    console.debug('Loaded Instance', slashInstance.name, 'sla')
+
     if (slashInstance.subCommand) {
+      contents.push([
+        String(`${i++}.`),
+        slashInstance.data?.name || 'default',
+        'Sub'
+      ])
       client.subCommands.set(slashInstance.subCommand, slashInstance)
       return
     }
