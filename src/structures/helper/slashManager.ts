@@ -31,6 +31,7 @@ export const SlashManager = async (
   }
 
   let i = 1
+  let subCount = 0
   const data: SlashCommandBuilder[] = []
   for (const slash of exportedClasses) {
     const SlashClass = allSlashCommands[slash]
@@ -54,7 +55,8 @@ export const SlashManager = async (
         'Sub'
       ])
       client.subCommands.set(slashInstance.subCommand, slashInstance)
-      return
+      subCount++
+      continue
     }
 
     client.slashCommands.set(
@@ -70,6 +72,13 @@ export const SlashManager = async (
       'Slash'
     ])
   }
+
+  contents.push([
+    String(`${i - subCount}.`),
+    ' of Total Slash Commands',
+    'Slash'
+  ])
+  contents.push([String(`${subCount}.`), ' of Total Sub Commands', 'Sub'])
 
   table(contents, TableConfig)
     .split('\n')
@@ -87,7 +96,13 @@ export const SlashManager = async (
   ;(async () => {
     try {
       console.info('Started refreshing application (/) commands.', 'cmd')
-      await rest.put(Routes.applicationCommands(client.user?.id || '000'), {
+
+      const clientId = process.env.CLIENT_ID
+      if (!clientId) {
+        throw new Error('Missing client id. Please set CLIENT_ID in .env')
+      }
+
+      await rest.put(Routes.applicationCommands(clientId), {
         body: data
       })
       console.info('Successfully reloaded application (/) commands.', 'cmd')
