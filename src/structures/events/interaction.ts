@@ -22,18 +22,10 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
     const slashCommand = client.slashCommands.get(interaction.commandName)
     const subCommand = interaction.options.getSubcommand(false)
 
-    console.log(interaction.commandName, subCommand)
-
     if (subCommand) {
-      console.log('ON SUB COMMAND')
-
-      console.log('SubCommand: ' + interaction.commandName + '.' + subCommand)
-
       const subCommandFile = client.subCommands.get(
         interaction.commandName + '.' + subCommand
       )
-
-      console.log('File: ' + subCommandFile)
 
       if (!subCommandFile) {
         return interaction.reply({
@@ -47,13 +39,9 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
         this.client
       )
 
-      console.log('Validation: ' + validation)
-
       if (!validation) return
 
       try {
-        console.log('Run: ' + subCommandFile.run)
-
         if (!subCommandFile.run)
           return interaction.reply({
             content: 'This sub command is outdated.',
@@ -77,8 +65,6 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
         })
       }
     } else if (slashCommand) {
-      console.log('ON SLASH COMMAND')
-
       const validation = SlashCommandValidator(
         interaction,
         slashCommand,
