@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.2.1
+
+### Patch Changes
+
+- 433d0c8: Debuging slash command subs
+
 ## 0.2.0
 
 ### Minor Changes
