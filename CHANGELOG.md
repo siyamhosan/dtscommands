@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.2.4
+
+### Patch Changes
+
+- 33c985e: sub command piority
+
 ## 0.2.3
 
 ### Patch Changes
