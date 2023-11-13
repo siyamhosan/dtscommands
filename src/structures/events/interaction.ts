@@ -21,16 +21,28 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
 
     const slashCommand = client.slashCommands.get(interaction.commandName)
     const subCommand = interaction.options.getSubcommand(false)
-    const uniCommand = client.uniCommands.get(interaction.commandName)
+
+    console.log(subCommand)
+
     if (slashCommand) {
-      SlashCommandValidator(interaction, slashCommand, this.client)
+      const validation = SlashCommandValidator(
+        interaction,
+        slashCommand,
+        this.client
+      )
+
+      if (!validation) return
 
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        if (!slashCommand.run)
+          return interaction.reply({
+            content: 'This command is outdated.',
+            ephemeral: true
+          })
         slashCommand.run({
           interaction,
-          client
+          client,
+          options: interaction.options
         })
       } catch (err) {
         console.error(err)
@@ -46,20 +58,32 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
       }
     } else if (subCommand) {
       const subCommandFile = client.subCommands.get(subCommand)
+
+      console.log(subCommandFile)
+
       if (!subCommandFile) {
         return interaction.reply({
           content: ' This sub command is outdated.',
           ephemeral: true
         })
       }
-      SlashCommandValidator(interaction, subCommandFile, this.client)
+      const validation = SlashCommandValidator(
+        interaction,
+        subCommandFile,
+        this.client
+      )
+      if (!validation) return
 
       try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        if (!subCommandFile.run)
+          return interaction.reply({
+            content: 'This sub command is outdated.',
+            ephemeral: true
+          })
         subCommandFile.run({
+          client,
           interaction,
-          client
+          options: interaction.options
         })
       } catch (err) {
         console.error(err)
@@ -73,25 +97,14 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
           ephemeral: true
         })
       }
-    } else if (uniCommand) {
-      UniCommandValidator(interaction, '', [], uniCommand, client)
-
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        uniCommand.run({
-          ctx: interaction,
-          client
+    } else {
+      if (interaction.replied) {
+        return interaction.editReply({
+          content: 'This command is outdated.'
         })
-      } catch (err) {
-        console.error(err)
-        if (interaction.replied) {
-          return interaction.editReply({
-            content: 'There was an error while executing this command!'
-          })
-        }
-        interaction.reply({
-          content: 'There was an error while executing this command!',
+      } else {
+        return interaction.reply({
+          content: 'This command is outdated.',
           ephemeral: true
         })
       }
