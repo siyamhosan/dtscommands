@@ -22,8 +22,6 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
     const slashCommand = client.slashCommands.get(interaction.commandName)
     const subCommand = interaction.options.getSubcommand(false)
 
-    console.log(subCommand)
-
     if (slashCommand) {
       const validation = SlashCommandValidator(
         interaction,
@@ -57,9 +55,9 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
         })
       }
     } else if (subCommand) {
-      const subCommandFile = client.subCommands.get(subCommand)
-
-      console.log(subCommandFile)
+      const subCommandFile = client.subCommands.get(
+        interaction.commandName + '.' + subCommand
+      )
 
       if (!subCommandFile) {
         return interaction.reply({
