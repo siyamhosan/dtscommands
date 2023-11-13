@@ -24,41 +24,7 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
 
     console.log(interaction.commandName, subCommand)
 
-    if (slashCommand) {
-      console.log('ON SLASH COMMAND')
-
-      const validation = SlashCommandValidator(
-        interaction,
-        slashCommand,
-        this.client
-      )
-
-      if (!validation) return
-
-      try {
-        if (!slashCommand.run)
-          return interaction.reply({
-            content: 'This command is outdated.',
-            ephemeral: true
-          })
-        slashCommand.run({
-          interaction,
-          client,
-          options: interaction.options
-        })
-      } catch (err) {
-        console.error(err)
-        if (interaction.replied) {
-          return interaction.editReply({
-            content: 'There was an error while executing this command!'
-          })
-        }
-        interaction.reply({
-          content: 'There was an error while executing this command!',
-          ephemeral: true
-        })
-      }
-    } else if (subCommand) {
+    if (subCommand) {
       console.log('ON SUB COMMAND')
 
       console.log('SubCommand: ' + interaction.commandName + '.' + subCommand)
@@ -96,6 +62,40 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
         subCommandFile.run({
           client,
           interaction,
+          options: interaction.options
+        })
+      } catch (err) {
+        console.error(err)
+        if (interaction.replied) {
+          return interaction.editReply({
+            content: 'There was an error while executing this command!'
+          })
+        }
+        interaction.reply({
+          content: 'There was an error while executing this command!',
+          ephemeral: true
+        })
+      }
+    } else if (slashCommand) {
+      console.log('ON SLASH COMMAND')
+
+      const validation = SlashCommandValidator(
+        interaction,
+        slashCommand,
+        this.client
+      )
+
+      if (!validation) return
+
+      try {
+        if (!slashCommand.run)
+          return interaction.reply({
+            content: 'This command is outdated.',
+            ephemeral: true
+          })
+        slashCommand.run({
+          interaction,
+          client,
           options: interaction.options
         })
       } catch (err) {
