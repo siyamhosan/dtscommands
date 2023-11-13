@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.3.0
+
+### Minor Changes
+
+- bb86eef: Slash Commands SubCOmmand Bug Fix Working Now
+
 ## 0.2.4
 
 ### Patch Changes
