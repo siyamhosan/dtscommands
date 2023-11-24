@@ -95,9 +95,11 @@ export const SlashManager = async (
     try {
       console.info('Started refreshing application (/) commands.', 'cmd')
 
-      const clientId = process.env.CLIENT_ID
+      const clientId = client.config.clientId
       if (!clientId) {
-        throw new Error('Missing client id. Please set CLIENT_ID in .env')
+        throw new Error(
+          'Missing client id. Please set CLIENT_ID in .env or client constructor.'
+        )
       }
 
       await rest.put(Routes.applicationCommands(clientId), {

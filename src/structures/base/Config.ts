@@ -46,6 +46,12 @@ export type Config = {
    * The token of the bot (default: process.env.TOKEN)
    */
   token?: string
+
+  /**
+   * Give a client id to the bot (default: process.env.CLIENT_ID)
+   */
+  clientId?: string
+
   /**
    *  Will monitor the files and reload them on change (default: false)
    */
@@ -70,6 +76,7 @@ export type Config = {
 
 export const defaultConfig: Required<Config> = {
   token: process.env.TOKEN ?? '',
+  clientId: process.env.CLIENT_ID ?? '',
   monitor: false,
   intents: [
     GatewayIntentBits.Guilds,
