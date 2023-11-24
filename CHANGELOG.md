@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.3.1
+
+### Patch Changes
+
+- f03a320: Added Custom Client Id system
+
 ## 0.3.0
 
 ### Minor Changes
