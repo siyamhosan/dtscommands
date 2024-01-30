@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.3.2
+
+### Patch Changes
+
+- 89aadfd: Added botAllow fun to commands
+
 ## 0.3.1
 
 ### Patch Changes
