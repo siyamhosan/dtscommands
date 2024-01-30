@@ -17,7 +17,6 @@ export class CommandsEvent extends Event<'messageCreate'> {
   }
 
   async run (message: Message) {
-    if (message.author.bot) return
     const client = this.client
     const prefix = client.config.prefix
 
@@ -58,6 +57,7 @@ export class CommandsEvent extends Event<'messageCreate'> {
       )
 
     if (command) {
+      if (message.author.bot && !command.allowBot) return
       if (await CommandValidator(message, prefix, args, command, client)) return
 
       try {

@@ -3,72 +3,72 @@ import {
   EmbedBuilder,
   Message,
   PermissionResolvable,
-  PermissionsBitField,
-} from "discord.js";
-import Bot from "../library/Client.js";
-import { del9 } from "../utils/del.js";
+  PermissionsBitField
+} from 'discord.js'
+import Bot from '../library/Client.js'
+import { del9 } from '../utils/del.js'
 
 export interface CommandRun {
-  message: Message;
-  args: string[];
-  client: Bot;
-  prefix: string;
+  message: Message
+  args: string[]
+  client: Bot
+  prefix: string
 }
 
 export interface CommandOptions {
-  name: string;
-  category: string;
-  description: string;
-  args?: boolean;
-  usage?: string;
-  aliases?: string[];
-  userPerms?: PermissionResolvable[];
-  botPerms?: PermissionResolvable[];
-  owner?: boolean;
-  manager?: boolean;
-  beta?: boolean;
-  /**
-   *  @beta
-   */
-  validation?: string[];
+  name: string
+  category: string
+  description: string
+  args?: boolean
+  usage?: string
+  aliases?: string[]
+  userPerms?: PermissionResolvable[]
+  botPerms?: PermissionResolvable[]
+  owner?: boolean
+  manager?: boolean
+  beta?: boolean
+  validation?: string[]
+  allowBot?: boolean
 }
 
 // make T type optional and default to string[] and supports enum
 export abstract class Command<T = string[]> {
-  readonly name: string;
-  readonly category: string;
-  readonly description: string;
-  readonly args: boolean;
-  readonly usage: string;
-  readonly aliases: string[];
-  readonly userPerms: PermissionResolvable[];
-  readonly botPerms: PermissionResolvable[];
-  readonly owner: boolean;
-  readonly manager: boolean;
-  readonly beta: boolean;
-  readonly validation: string[] | T;
+  readonly name: string
+  readonly category: string
+  readonly description: string
+  readonly args: boolean
+  readonly usage: string
+  readonly aliases: string[]
+  readonly userPerms: PermissionResolvable[]
+  readonly botPerms: PermissionResolvable[]
+  readonly owner: boolean
+  readonly manager: boolean
+  readonly beta: boolean
+  readonly validation: string[] | T
+  readonly allowBot: boolean
 
-  constructor(options: CommandOptions) {
-    this.name = options.name;
-    this.category = options.category;
-    this.description = options.description;
-    this.args = options.args || false;
-    this.usage = options.usage || "";
-    this.aliases = options.aliases || [];
-    this.userPerms = options.userPerms || [];
-    this.botPerms = options.botPerms || [];
-    this.owner = options.owner || false;
-    this.manager = options.manager || false;
-    this.beta = options.beta || false;
-    this.validation = options.validation || [];
+  constructor (options: CommandOptions) {
+    this.name = options.name
+    this.category = options.category
+    this.description = options.description
+    this.args = options.args || false
+    this.usage = options.usage || ''
+    this.aliases = options.aliases || []
+    this.userPerms = options.userPerms || []
+    this.botPerms = options.botPerms || []
+    this.owner = options.owner || false
+    this.manager = options.manager || false
+    this.beta = options.beta || false
+    this.validation = options.validation || []
+    this.allowBot = options.allowBot || false
   }
 
-  public abstract run(options: CommandRun): void;
+  public abstract run(options: CommandRun): void
 }
 
-const Cooldown = new Collection<string, Date>();
+const Cooldown = new Collection<string, Date>()
 
-export async function CommandValidator(
+export async function CommandValidator (
   message: Message,
   prefix: string,
   args: string[],
@@ -76,129 +76,129 @@ export async function CommandValidator(
   client: Bot
 ): Promise<boolean> {
   const getCooldownTime = () => {
-    const cooldown = new Date();
+    const cooldown = new Date()
     cooldown.setMilliseconds(
       cooldown.getMilliseconds() + client.config.cooldown * 1000
-    );
-    return cooldown;
-  };
+    )
+    return cooldown
+  }
 
   if (Cooldown.has(message.author.id)) {
-    const cooldown = Cooldown.get(message.author.id);
+    const cooldown = Cooldown.get(message.author.id)
     if (cooldown) {
-      const now = new Date();
-      const diff = now.getTime() - cooldown.getTime();
-      const seconds = Math.floor(diff / 1000);
-      const time = client.config.cooldown - seconds;
-      const cooldownTime = new Date();
-      cooldownTime.setSeconds(cooldownTime.getSeconds() + time);
+      const now = new Date()
+      const diff = now.getTime() - cooldown.getTime()
+      const seconds = Math.floor(diff / 1000)
+      const time = client.config.cooldown - seconds
+      const cooldownTime = new Date()
+      cooldownTime.setSeconds(cooldownTime.getSeconds() + time)
 
       const embed = new EmbedBuilder()
         .setColor(client.config.themeColors.ERROR)
-        .setTitle("Cooldown");
+        .setTitle('Cooldown')
       embed.setDescription(
         `You are on cooldown, please wait <t:${Math.floor(
           cooldownTime.getTime() / 1000
         )}:R> seconds before using this command again.`
-      );
+      )
       message.channel
         .send({ embeds: [embed] })
-        .then((msg) => {
+        .then(msg => {
           setTimeout(() => {
-            msg.delete();
-          }, cooldownTime.getTime() - Date.now());
+            msg.delete()
+          }, cooldownTime.getTime() - Date.now())
         })
-        .catch(() => null);
-      return true;
+        .catch(() => null)
+      return true
     }
   }
 
-  Cooldown.set(message.author.id, getCooldownTime());
+  Cooldown.set(message.author.id, getCooldownTime())
   setTimeout(() => {
-    Cooldown.delete(message.author.id);
-  }, client.config.cooldown * 1000);
+    Cooldown.delete(message.author.id)
+  }, client.config.cooldown * 1000)
 
   if (
     !message.guild?.members.me?.permissions.has(
-      PermissionsBitField.resolve("SendMessages")
+      PermissionsBitField.resolve('SendMessages')
     )
   ) {
     await message.author.dmChannel
       ?.send({
-        content: `I don't have **\`SEND_MESSAGES\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`,
+        content: `I don't have **\`SEND_MESSAGES\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       })
-      .catch(() => null);
-    return true;
+      .catch(() => null)
+    return true
   }
 
   if (
     !message.guild.members.me.permissions.has(
-      PermissionsBitField.resolve("ViewChannel")
+      PermissionsBitField.resolve('ViewChannel')
     )
   ) {
-    return true;
+    return true
   }
 
   if (
     !message.guild.members.me.permissions.has(
-      PermissionsBitField.resolve("EmbedLinks")
+      PermissionsBitField.resolve('EmbedLinks')
     )
   ) {
     await message.channel
       .send({
-        content: `I don't have **\`EMBED_LINKS\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`,
+        content: `I don't have **\`EMBED_LINKS\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
       })
-      .catch(() => null);
+      .catch(() => null)
 
-    return true;
+    return true
   }
 
-  const embed = new EmbedBuilder().setColor(client.config.themeColors.ERROR);
+  const embed = new EmbedBuilder().setColor(client.config.themeColors.ERROR)
 
   if (command.validation.length > 0) {
     for (const validation of command.validation) {
       const customValidation = client.config.customValidations?.find(
-        (customValidation) => customValidation.name === validation
-      );
-      if (!customValidation) continue;
+        customValidation => customValidation.name === validation
+      )
+      if (!customValidation) continue
 
       if (
         !customValidation.validate({
           message,
-          interaction: undefined,
+          interaction: undefined
         })
       ) {
-        if (typeof customValidation.onFail === "string") {
-          embed.setDescription(customValidation.onFail);
-          message.channel.send({ embeds: [embed] });
+        if (typeof customValidation.onFail === 'string') {
+          embed.setDescription(customValidation.onFail)
+          message.channel.send({ embeds: [embed] })
         } else if (customValidation.onFail instanceof EmbedBuilder) {
           if (customValidation.onFail.toJSON().color === undefined)
-            customValidation.onFail.setColor(client.config.themeColors.ERROR);
+            customValidation.onFail.setColor(client.config.themeColors.ERROR)
 
           message.channel
             .send({ embeds: [customValidation.onFail] })
             .then(del9)
-            .catch(() => null);
+            .catch(() => null)
         }
 
-        return true;
+        return true
       }
     }
   }
 
   if (command.args && !args.length) {
-    let reply = `You didn't provide any arguments, ${message.author}!`;
+    let reply = `You didn't provide any arguments, ${message.author}!`
 
     if (command.usage) {
-      reply += `\nUsage: \`${prefix}${command.name} ${command.usage}\``;
+      reply += `\nUsage: \`${prefix}${command.name} ${command.usage}\``
     }
 
-    embed.setDescription(reply);
+    embed.setDescription(reply)
     message.channel
       .send({ embeds: [embed] })
       .then(del9)
-      .catch(() => null);
-    return true;
+      .catch(() => null)
+    return true
   }
 
   if (command.botPerms) {
@@ -209,9 +209,9 @@ export async function CommandValidator(
     ) {
       embed.setDescription(
         `I don't have **\`${command.botPerms}\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
-      );
-      message.channel.send({ embeds: [embed] });
-      return true;
+      )
+      message.channel.send({ embeds: [embed] })
+      return true
     }
   }
   if (command.userPerms) {
@@ -222,20 +222,20 @@ export async function CommandValidator(
     ) {
       embed.setDescription(
         `You don't have **\`${command.userPerms}\`** permission in <#${message.channelId}> to execute this **\`${command.name}\`** command.`
-      );
-      message.channel.send({ embeds: [embed] });
-      return true;
+      )
+      message.channel.send({ embeds: [embed] })
+      return true
     }
   }
 
   if (command.owner && !client.config.owners?.includes(message.author.id)) {
     embed.setDescription(
-      `Only <@${client.config.owners[0] || "mr. unknown"}> Can Use this Command`
-    );
+      `Only <@${client.config.owners[0] || 'mr. unknown'}> Can Use this Command`
+    )
 
-    message.channel.send({ embeds: [embed] });
-    return true;
+    message.channel.send({ embeds: [embed] })
+    return true
   }
 
-  return false;
+  return false
 }
