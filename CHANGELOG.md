@@ -1,5 +1,15 @@
 # bkash-payment-api
 
+## 0.4.0
+
+### Minor Changes
+
+- eedcecd: Button Manager
+
+### Patch Changes
+
+- 315248c: Update release
+
 ## 0.3.2
 
 ### Patch Changes
