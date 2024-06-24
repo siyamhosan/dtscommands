@@ -1,5 +1,12 @@
 # bkash-payment-api
 
+## 0.4.2
+
+### Patch Changes
+
+- a55cade: Update
+- 104c6ac: CustomIdValidation
+
 ## 0.4.1
 
 ### Patch Changes
