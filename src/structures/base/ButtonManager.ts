@@ -14,7 +14,7 @@ export interface ButtonRun {
 
 export interface ButtonOptions {
   nickname?: string
-  customId: string
+  customIdValidation: () => boolean
   description: string
   category: string
   validation?: string[]
@@ -22,14 +22,14 @@ export interface ButtonOptions {
 
 export abstract class ButtonManager {
   readonly nickname: string
-  readonly customId: string
+  readonly customIdValidation: () => boolean
   readonly description: string
   readonly category: string
   readonly validation: string[]
 
   constructor (options: ButtonOptions) {
     this.nickname = options.nickname || ''
-    this.customId = options.customId
+    this.customIdValidation = options.customIdValidation
     this.description = options.description
     this.category = options.category
     this.validation = options.validation || []
