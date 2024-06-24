@@ -30,7 +30,7 @@ export async function ButtonsManager (
     if (commandInstance.customIdValidation) {
       client.buttons.set(commandInstance.customIdValidation, commandInstance)
       contents.push([
-        `${client.commands.size}`,
+        `${client.buttons.size}`,
         commandInstance.nickname,
         commandInstance.category
       ])
