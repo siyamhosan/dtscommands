@@ -45,6 +45,7 @@ import {
 } from './structures/helper/compiler.js'
 import { EventManager } from './structures/helper/eventManager.js'
 import { SlashManager } from './structures/helper/slashManager.js'
+import { ButtonsManager } from './structures/helper/buttonManager.js'
 
 // library
 import Bot from './structures/library/Client.js'
@@ -94,6 +95,7 @@ export {
   compilerResult,
   EventManager,
   SlashManager,
+  ButtonsManager,
   // library
   Bot,
   Logger,
