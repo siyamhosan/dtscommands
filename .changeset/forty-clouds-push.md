@@ -1,0 +1,5 @@
+---
+"dtscommands": minor
+---
+
+Button Manager

@@ -63,7 +63,7 @@ export abstract class Command<T = string[]> {
     this.allowBot = options.allowBot || false
   }
 
-  public abstract run(options: CommandRun): void
+  public abstract run(options: CommandRun): void | Promise<void>
 }
 
 const Cooldown = new Collection<string, Date>()

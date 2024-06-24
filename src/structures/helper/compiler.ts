@@ -14,6 +14,13 @@ export async function Compiler (
   path: string,
   of: string
 ): Promise<compilerResult> {
+  console.trace(
+    chalk.bold('Compiler started for :'),
+    chalk.bold(path),
+    chalk.bold('in :'),
+    chalk.bold(of)
+  )
+
   const startCompiler = Date.now()
   const dirs = await readdir(`${path}`)
 

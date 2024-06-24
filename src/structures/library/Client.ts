@@ -6,6 +6,7 @@ import { SlashCommand } from '../base/SlashCommand.js'
 import { UniCommand } from '../base/UniCommand.js'
 import { botCommandEventsManager } from '../events/index.js'
 import Logger from './Logger.js'
+import { ButtonManager } from '../base/ButtonManager.js'
 
 class Bot extends Client {
   public readonly config: Required<Config>
@@ -14,6 +15,7 @@ class Bot extends Client {
   public readonly slashCommands: Collection<string, SlashCommand>
   public readonly subCommands: Collection<string, SlashCommand>
   public readonly uniCommands: Collection<string, UniCommand>
+  public readonly buttons: Collection<string, ButtonManager>
   // a collections object there people can add their own collections to it then it will be accessible in the client
   public collections: Record<string, Collection<string, unknown>> = {}
   // a services object there people can add their own services classes to it then it will be accessible in the client
@@ -32,6 +34,7 @@ class Bot extends Client {
     this.slashCommands = new Collection()
     this.subCommands = new Collection()
     this.uniCommands = new Collection()
+    this.buttons = new Collection()
     Logger()
   }
 

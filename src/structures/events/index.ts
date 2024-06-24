@@ -1,11 +1,13 @@
 import Bot from '../library/Client'
+import { ButtonEvent } from './buttons'
 import { CommandsEvent } from './command'
 import { InteractionCommandEvent } from './interaction'
 
 export const botCommandEventsManager = async (client: Bot) => {
   const events = [
     new CommandsEvent(client),
-    new InteractionCommandEvent(client)
+    new InteractionCommandEvent(client),
+    new ButtonEvent(client)
   ]
 
   for (const event of events) {
