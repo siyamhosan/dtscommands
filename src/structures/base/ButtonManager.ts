@@ -14,7 +14,7 @@ export interface ButtonRun {
 
 export interface ButtonOptions {
   nickname?: string
-  customIdValidation: () => boolean
+  customIdValidation: (customId: string) => boolean
   description: string
   category: string
   validation?: string[]
