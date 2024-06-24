@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.4.3
+
+### Patch Changes
+
+- bb4b4a0: FIX
+
 ## 0.4.2
 
 ### Patch Changes
