@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.4.1
+
+### Patch Changes
+
+- 9267243: ButtonsManager
+
 ## 0.4.0
 
 ### Minor Changes
