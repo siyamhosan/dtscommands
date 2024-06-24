@@ -4,7 +4,7 @@ import { CommandValidator } from '../base/Command.js'
 import { Event } from '../base/Event.js'
 import { UniCommandValidator } from '../base/UniCommand.js'
 import Bot from '../library/Client.js'
-import { ButtonValidation } from '../base/ButtonManager.js'
+import { ButtonManager, ButtonValidation } from '../base/ButtonManager.js'
 
 export class ButtonEvent extends Event<'interactionCreate'> {
   private client: Bot
@@ -21,7 +21,12 @@ export class ButtonEvent extends Event<'interactionCreate'> {
     if (!interaction.isButton()) return
     const client = this.client
 
-    const buttonHandler = client.buttons.get(interaction.customId)
+    let buttonHandler: ButtonManager | undefined
+    client.buttons.forEach(button => {
+      if (button.customIdValidation(interaction.customId)) {
+        buttonHandler = button
+      }
+    })
     if (!buttonHandler) return
 
     if (await ButtonValidation(interaction, buttonHandler, client)) return

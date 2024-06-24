@@ -15,7 +15,10 @@ class Bot extends Client {
   public readonly slashCommands: Collection<string, SlashCommand>
   public readonly subCommands: Collection<string, SlashCommand>
   public readonly uniCommands: Collection<string, UniCommand>
-  public readonly buttons: Collection<string, ButtonManager>
+  public readonly buttons: Collection<
+    (customId: string) => boolean,
+    ButtonManager
+  >
   // a collections object there people can add their own collections to it then it will be accessible in the client
   public collections: Record<string, Collection<string, unknown>> = {}
   // a services object there people can add their own services classes to it then it will be accessible in the client

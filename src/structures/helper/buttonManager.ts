@@ -27,8 +27,8 @@ export async function ButtonsManager (
 
     const commandInstance = new CommandClass(client) as ButtonManager
 
-    if (commandInstance.customId) {
-      client.buttons.set(commandInstance.customId, commandInstance)
+    if (commandInstance.customIdValidation) {
+      client.buttons.set(commandInstance.customIdValidation, commandInstance)
       contents.push([
         `${client.commands.size}`,
         commandInstance.nickname,

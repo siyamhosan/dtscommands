@@ -22,7 +22,7 @@ export interface ButtonOptions {
 
 export abstract class ButtonManager {
   readonly nickname: string
-  readonly customIdValidation: () => boolean
+  readonly customIdValidation: (customId: string) => boolean
   readonly description: string
   readonly category: string
   readonly validation: string[]
