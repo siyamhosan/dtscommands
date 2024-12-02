@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.4.5
+
+### Patch Changes
+
+- fbfa4b8: Added Validation Error manager
+
 ## 0.4.4
 
 ### Patch Changes
