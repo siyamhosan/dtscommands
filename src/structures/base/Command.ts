@@ -9,7 +9,7 @@ import Bot from '../library/Client.js'
 import { del9 } from '../utils/del.js'
 
 export interface CommandRun {
-  message: Message
+  message: Message<true>
   args: string[]
   client: Bot
   prefix: string
@@ -29,6 +29,7 @@ export interface CommandOptions {
   beta?: boolean
   validation?: string[]
   allowBot?: boolean
+  guildOnly?: boolean
 }
 
 // make T type optional and default to string[] and supports enum
@@ -46,6 +47,7 @@ export abstract class Command<T = string[]> {
   readonly beta: boolean
   readonly validation: string[] | T
   readonly allowBot: boolean
+  readonly guildOnly: boolean
 
   constructor (options: CommandOptions) {
     this.name = options.name
@@ -61,6 +63,7 @@ export abstract class Command<T = string[]> {
     this.beta = options.beta || false
     this.validation = options.validation || []
     this.allowBot = options.allowBot || false
+    this.guildOnly = options.guildOnly || false
   }
 
   public abstract run(options: CommandRun): void | Promise<void>
@@ -69,7 +72,7 @@ export abstract class Command<T = string[]> {
 const Cooldown = new Collection<string, Date>()
 
 export async function CommandValidator (
-  message: Message,
+  message: Message<true>,
   prefix: string,
   args: string[],
   command: Command,
@@ -117,6 +120,10 @@ export async function CommandValidator (
   setTimeout(() => {
     Cooldown.delete(message.author.id)
   }, client.config.cooldown * 1000)
+
+  if (command.guildOnly && !message.guild) {
+    return true
+  }
 
   if (
     !message.guild?.members.me?.permissions.has(

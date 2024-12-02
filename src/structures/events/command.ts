@@ -1,9 +1,10 @@
 import chalk from 'chalk'
-import { Message } from 'discord.js'
+import { EmbedBuilder, Message } from 'discord.js'
 import { CommandValidator } from '../base/Command.js'
 import { Event } from '../base/Event.js'
 import { UniCommandValidator } from '../base/UniCommand.js'
 import Bot from '../library/Client.js'
+import { ValidationError } from '../library/Error.js'
 
 export class CommandsEvent extends Event<'messageCreate'> {
   private client: Bot
@@ -16,7 +17,7 @@ export class CommandsEvent extends Event<'messageCreate'> {
     this.client = client
   }
 
-  async run (message: Message) {
+  async run (message: Message<true>) {
     const client = this.client
     const prefix = client.config.prefix
 
@@ -69,9 +70,29 @@ export class CommandsEvent extends Event<'messageCreate'> {
         })
       } catch (err) {
         console.warn(chalk.redBright(err), 'cmd')
-        message.reply({
-          content: 'There was an error trying to execute that command!'
-        })
+        if (err instanceof ValidationError) {
+          const embed = new EmbedBuilder().setColor(
+            client.config.themeColors.ERROR
+          )
+
+          embed.setDescription(err.message)
+          embed.setTitle('Validation Error')
+          embed.setTimestamp()
+
+          message
+            .reply({
+              embeds: [embed]
+            })
+            .then(msg => {
+              setTimeout(() => {
+                msg.delete()
+              }, err.ttl * 1000)
+            })
+        } else {
+          message.reply({
+            content: 'There was an error trying to execute that command!'
+          })
+        }
       }
     } else if (uniCommand) {
       if (

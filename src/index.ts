@@ -50,6 +50,7 @@ import { ButtonsManager } from './structures/helper/buttonManager.js'
 // library
 import Bot from './structures/library/Client.js'
 import Logger from './structures/library/Logger.js'
+import { ValidationError } from './structures/library/Error.js'
 
 // utils
 import {
@@ -99,6 +100,7 @@ export {
   // library
   Bot,
   Logger,
+  ValidationError,
   // utils
   del3,
   del5,
