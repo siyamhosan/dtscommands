@@ -1,6 +1,7 @@
 import {
   ButtonInteraction,
   EmbedBuilder,
+  GuildTextBasedChannel,
   PermissionsBitField
 } from 'discord.js'
 import Bot from '../library/Client'
@@ -43,6 +44,8 @@ export async function ButtonValidation (
   button: ButtonManager,
   client: Bot
 ) {
+  const channel = interaction.channel as GuildTextBasedChannel
+
   if (
     !interaction.guild?.members.me?.permissions.has(
       PermissionsBitField.resolve('SendMessages')
@@ -69,7 +72,7 @@ export async function ButtonValidation (
       PermissionsBitField.resolve('EmbedLinks')
     )
   ) {
-    await interaction.channel
+    await channel
       ?.send({
         content: `I don't have **\`EMBED_LINKS\`** permission in <#${interaction.channelId}> to execute this **\`${button.nickname}\`** button.`
       })
@@ -95,12 +98,12 @@ export async function ButtonValidation (
       ) {
         if (typeof customValidation.onFail === 'string') {
           embed.setDescription(customValidation.onFail)
-          interaction.channel?.send({ embeds: [embed] })
+          channel?.send({ embeds: [embed] })
         } else if (customValidation.onFail instanceof EmbedBuilder) {
           if (customValidation.onFail.toJSON().color === undefined)
             customValidation.onFail.setColor(client.config.themeColors.ERROR)
 
-          interaction.channel
+          channel
             ?.send({ embeds: [customValidation.onFail] })
             .then(del9)
             .catch(() => null)

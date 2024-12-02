@@ -1,6 +1,7 @@
 import {
   ChatInputCommandInteraction,
   EmbedBuilder,
+  GuildTextBasedChannel,
   Message,
   PermissionsBitField,
   SlashCommandBuilder,
@@ -10,7 +11,7 @@ import Bot from '../library/Client.js'
 import { CommandOptions } from './Command.js'
 
 export interface UniCommandRun {
-  ctx: ChatInputCommandInteraction | Message
+  ctx: ChatInputCommandInteraction | Message<true>
   args: string[]
   client: Bot
   prefix: string
@@ -40,7 +41,7 @@ export abstract class UniCommand {
 }
 
 export async function UniCommandValidator (
-  ctx: Message | ChatInputCommandInteraction,
+  ctx: Message<true> | ChatInputCommandInteraction,
   prefix: string,
   args: string[],
   uniCommand: UniCommand,
@@ -49,6 +50,7 @@ export async function UniCommandValidator (
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const commandUser: User = ctx.author || ctx.user || ctx.member?.user
+  const channel = ctx.channel as GuildTextBasedChannel
 
   const { command } = uniCommand
   if (
@@ -78,7 +80,7 @@ export async function UniCommandValidator (
       PermissionsBitField.resolve('EmbedLinks')
     )
   ) {
-    await ctx.channel
+    await channel
       ?.send({
         content: `I don't have **\`EMBED_LINKS\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       })
@@ -97,7 +99,7 @@ export async function UniCommandValidator (
     }
 
     embed.setDescription(reply)
-    ctx.channel?.send({ embeds: [embed] })
+    channel?.send({ embeds: [embed] })
     return true
   }
 
@@ -110,7 +112,7 @@ export async function UniCommandValidator (
       embed.setDescription(
         `I don't have **\`${command.botPerms}\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      ctx.channel?.send({ embeds: [embed] })
+      channel?.send({ embeds: [embed] })
       return true
     }
   }
@@ -125,7 +127,7 @@ export async function UniCommandValidator (
       embed.setDescription(
         `You don't have **\`${command.userPerms}\`** permission in <#${ctx.channelId}> to execute this **\`${command.name}\`** command.`
       )
-      ctx.channel?.send({ embeds: [embed] })
+      channel?.send({ embeds: [embed] })
       return true
     }
   }
@@ -134,7 +136,7 @@ export async function UniCommandValidator (
     embed.setDescription(
       `Only <@${client.config.owners[0]}> Can Use this Command`
     )
-    ctx.channel?.send({ embeds: [embed] })
+    channel?.send({ embeds: [embed] })
     return true
   }
   return false
