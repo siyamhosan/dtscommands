@@ -1,6 +1,6 @@
 {
   "name": "dtscommands",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A Command Manager For Discord.js & Typescript for easy command creation and management.  ",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
