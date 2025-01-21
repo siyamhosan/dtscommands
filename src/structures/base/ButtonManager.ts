@@ -38,21 +38,57 @@ export abstract class ButtonManager {
 
   abstract run(options: ButtonRun): void | Promise<void>
 }
-
 export async function ButtonValidation (
   interaction: ButtonInteraction,
   button: ButtonManager,
   client: Bot
 ) {
+  // For DM channels, only basic checks are needed
+  if (!interaction.guild) {
+    if (button.validation.length > 0) {
+      for (const validation of button.validation) {
+        const customValidation = client.config.customValidations?.find(
+          customValidation => customValidation.name === validation
+        )
+        if (!customValidation) continue
+
+        if (
+          !customValidation.validate({
+            message: undefined,
+            interaction
+          })
+        ) {
+          if (typeof customValidation.onFail === 'string') {
+            await interaction.reply({
+              content: customValidation.onFail,
+              ephemeral: true
+            })
+          } else if (customValidation.onFail instanceof EmbedBuilder) {
+            if (customValidation.onFail.toJSON().color === undefined)
+              customValidation.onFail.setColor(client.config.themeColors.ERROR)
+
+            await interaction.reply({
+              embeds: [customValidation.onFail],
+              ephemeral: true
+            })
+          }
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  // For guild channels
   const channel = interaction.channel as GuildTextBasedChannel
 
   if (
-    !interaction.guild?.members.me?.permissions.has(
+    !interaction.guild.members.me?.permissions.has(
       PermissionsBitField.resolve('SendMessages')
     )
   ) {
-    await interaction.user.dmChannel
-      ?.send({
+    await interaction.user
+      .send({
         content: `I don't have **\`SEND_MESSAGES\`** permission in <#${interaction.channelId}> to execute this **\`${button.nickname}\`** button.`
       })
       .catch(() => null)
@@ -73,11 +109,10 @@ export async function ButtonValidation (
     )
   ) {
     await channel
-      ?.send({
+      .send({
         content: `I don't have **\`EMBED_LINKS\`** permission in <#${interaction.channelId}> to execute this **\`${button.nickname}\`** button.`
       })
       .catch(() => null)
-
     return true
   }
 
@@ -98,17 +133,16 @@ export async function ButtonValidation (
       ) {
         if (typeof customValidation.onFail === 'string') {
           embed.setDescription(customValidation.onFail)
-          channel?.send({ embeds: [embed] })
+          await interaction.reply({ embeds: [embed], ephemeral: true })
         } else if (customValidation.onFail instanceof EmbedBuilder) {
           if (customValidation.onFail.toJSON().color === undefined)
             customValidation.onFail.setColor(client.config.themeColors.ERROR)
 
-          channel
-            ?.send({ embeds: [customValidation.onFail] })
-            .then(del9)
-            .catch(() => null)
+          await interaction.reply({
+            embeds: [customValidation.onFail],
+            ephemeral: true
+          })
         }
-
         return true
       }
     }
