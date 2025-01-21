@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.4.6
+
+### Patch Changes
+
+- 92ec464: ButtonValidation Fixes
+
 ## 0.4.5
 
 ### Patch Changes
