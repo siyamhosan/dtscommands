@@ -33,6 +33,15 @@ import {
   ButtonRun,
   ButtonValidation
 } from './structures/base/ButtonManager.js'
+import {
+  CommandCooldownOptions,
+  CooldownConfigOptions,
+  CooldownManager,
+  CooldownMessageCreator,
+  CooldownType,
+  CooldownValidator,
+  defaultCooldownMessage
+} from './structures/base/Cooldown.js'
 
 // events
 
@@ -88,6 +97,13 @@ export {
   ButtonOptions,
   ButtonRun,
   ButtonValidation,
+  CommandCooldownOptions,
+  CooldownConfigOptions,
+  CooldownManager,
+  CooldownMessageCreator,
+  CooldownType,
+  CooldownValidator,
+  defaultCooldownMessage,
   // events
   // helpers
   CommandManager,
