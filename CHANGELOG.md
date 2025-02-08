@@ -1,5 +1,15 @@
 # bkash-payment-api
 
+## 0.5.0
+
+### Minor Changes
+
+- 492ee6e: Added Cooldown system
+
+### Patch Changes
+
+- cf32c43: build check
+
 ## 0.4.6
 
 ### Patch Changes
