@@ -9,6 +9,7 @@ import {
 } from 'discord.js'
 import path from 'path'
 import { TableUserConfig } from 'table'
+import { CooldownConfigOptions, defaultCooldownMessage } from './Cooldown'
 
 export type Manager = {
   guildId: string
@@ -70,7 +71,7 @@ export type Config = {
   uniCommandsDir: string
   slashCommandsDir: string
   mentionMessage?: MentionMessage
-  cooldown?: number
+  cooldown?: CooldownConfigOptions
   customValidations?: CustomValidations[]
 }
 
@@ -119,7 +120,12 @@ export const defaultConfig: Required<Config> = {
   mentionMessage: {
     content: 'My prefix is `!`'
   },
-  cooldown: 3,
+  cooldown: {
+    duration: 3000,
+    type: 'global',
+    enabled: true,
+    messageCreator: defaultCooldownMessage
+  },
   customValidations: []
 }
 

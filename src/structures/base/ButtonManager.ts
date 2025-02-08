@@ -6,6 +6,7 @@ import {
 } from 'discord.js'
 import Bot from '../library/Client'
 import { del9 } from '../utils/del'
+import { CommandCooldownOptions, CooldownValidator } from './Cooldown'
 
 export interface ButtonRun {
   interaction: ButtonInteraction
@@ -19,6 +20,7 @@ export interface ButtonOptions {
   description: string
   category: string
   validation?: string[]
+  cooldown?: CommandCooldownOptions
 }
 
 export abstract class ButtonManager {
@@ -27,6 +29,7 @@ export abstract class ButtonManager {
   readonly description: string
   readonly category: string
   readonly validation: string[]
+  readonly cooldown: CommandCooldownOptions | undefined
 
   constructor (options: ButtonOptions) {
     this.nickname = options.nickname || ''
@@ -34,6 +37,7 @@ export abstract class ButtonManager {
     this.description = options.description
     this.category = options.category
     this.validation = options.validation || []
+    this.cooldown = options.cooldown
   }
 
   abstract run(options: ButtonRun): void | Promise<void>
@@ -78,6 +82,13 @@ export async function ButtonValidation (
     }
     return false
   }
+
+  const isBlockedByCooldown = await CooldownValidator(
+    interaction,
+    client,
+    button
+  )
+  if (isBlockedByCooldown) return true
 
   // For guild channels
   const channel = interaction.channel as GuildTextBasedChannel

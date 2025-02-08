@@ -12,6 +12,7 @@ import {
   SlashCommandBuilder
 } from 'discord.js'
 import Bot from '../library/Client.js'
+import { CommandCooldownOptions, CooldownValidator } from './Cooldown.js'
 
 export interface SlashCommandRun {
   interaction: ChatInputCommandInteraction
@@ -20,36 +21,35 @@ export interface SlashCommandRun {
 }
 
 export interface SlashCommandOptions {
-  data?:
-    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
-    | undefined
+  data?: SlashCommandBuilder | undefined
+  category?: string
   subCommand?: string | undefined
   manager?: boolean
   botPerms?: PermissionResolvable[]
   beta?: boolean
-  /**
-   *  @beta
-   */
   validation?: string[]
+  cooldown?: CommandCooldownOptions
 }
 
 export abstract class SlashCommand {
-  readonly data:
-    | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
-    | undefined
+  readonly data: SlashCommandBuilder | undefined
+  readonly category: string | undefined
   readonly subCommand: string | undefined
   readonly manager: boolean
   readonly botPerms: PermissionResolvable[]
   readonly beta: boolean
   readonly validation: string[]
+  readonly cooldown: CommandCooldownOptions | undefined
 
   constructor (options: SlashCommandOptions) {
     this.data = options.data || undefined
     this.subCommand = options.subCommand || undefined
+    this.category = options.category || undefined
     this.manager = options.manager || false
     this.botPerms = options.botPerms || []
     this.beta = options.beta || false
     this.validation = options.validation || []
+    this.cooldown = options.cooldown || undefined
   }
 
   public abstract run?(options: SlashCommandRun): void
@@ -105,6 +105,9 @@ export async function SlashCommandValidator (
       }
     }
   }
+
+  const isBlockedByCooldown = await CooldownValidator(interaction, client, cmd)
+  if (isBlockedByCooldown) return true
 
   if (cmd.beta) {
     if (

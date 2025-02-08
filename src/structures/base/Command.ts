@@ -7,6 +7,7 @@ import {
 } from 'discord.js'
 import Bot from '../library/Client.js'
 import { del9 } from '../utils/del.js'
+import { CooldownConfigOptions, CooldownValidator } from './Cooldown.js'
 
 export interface CommandRun {
   message: Message<true>
@@ -30,6 +31,7 @@ export interface CommandOptions {
   validation?: string[]
   allowBot?: boolean
   guildOnly?: boolean
+  cooldown?: CooldownConfigOptions
 }
 
 // make T type optional and default to string[] and supports enum
@@ -48,6 +50,7 @@ export abstract class Command<T = string[]> {
   readonly validation: string[] | T
   readonly allowBot: boolean
   readonly guildOnly: boolean
+  readonly cooldown: CooldownConfigOptions | undefined
 
   constructor (options: CommandOptions) {
     this.name = options.name
@@ -64,6 +67,7 @@ export abstract class Command<T = string[]> {
     this.validation = options.validation || []
     this.allowBot = options.allowBot || false
     this.guildOnly = options.guildOnly || false
+    this.cooldown = options.cooldown || undefined
   }
 
   public abstract run(options: CommandRun): void | Promise<void>
@@ -78,48 +82,53 @@ export async function CommandValidator (
   command: Command,
   client: Bot
 ): Promise<boolean> {
-  const getCooldownTime = () => {
-    const cooldown = new Date()
-    cooldown.setMilliseconds(
-      cooldown.getMilliseconds() + client.config.cooldown * 1000
-    )
-    return cooldown
-  }
+  // const getCooldownTime = () => {
+  //   const cooldown = new Date()
+  //   cooldown.setMilliseconds(
+  //     cooldown.getMilliseconds() + client.config.cooldown * 1000
+  //   )
+  //   return cooldown
+  // }
 
-  if (Cooldown.has(message.author.id)) {
-    const cooldown = Cooldown.get(message.author.id)
-    if (cooldown) {
-      const now = new Date()
-      const diff = now.getTime() - cooldown.getTime()
-      const seconds = Math.floor(diff / 1000)
-      const time = client.config.cooldown - seconds
-      const cooldownTime = new Date()
-      cooldownTime.setSeconds(cooldownTime.getSeconds() + time)
+  // if (Cooldown.has(message.author.id)) {
+  //   const cooldown = Cooldown.get(message.author.id)
+  //   if (cooldown) {
+  //     const now = new Date()
+  //     const diff = now.getTime() - cooldown.getTime()
+  //     const seconds = Math.floor(diff / 1000)
+  //     const time = client.config.cooldown - seconds
+  //     const cooldownTime = new Date()
+  //     cooldownTime.setSeconds(cooldownTime.getSeconds() + time)
 
-      const embed = new EmbedBuilder()
-        .setColor(client.config.themeColors.ERROR)
-        .setTitle('Cooldown')
-      embed.setDescription(
-        `You are on cooldown, please wait <t:${Math.floor(
-          cooldownTime.getTime() / 1000
-        )}:R> seconds before using this command again.`
-      )
-      message.channel
-        .send({ embeds: [embed] })
-        .then(msg => {
-          setTimeout(() => {
-            msg.delete()
-          }, cooldownTime.getTime() - Date.now())
-        })
-        .catch(() => null)
-      return true
-    }
-  }
+  //     const embed = new EmbedBuilder()
+  //       .setColor(client.config.themeColors.ERROR)
+  //       .setTitle('Cooldown')
+  //     embed.setDescription(
+  //       `You are on cooldown, please wait <t:${Math.floor(
+  //         cooldownTime.getTime() / 1000
+  //       )}:R> seconds before using this command again.`
+  //     )
+  //     message.channel
+  //       .send({ embeds: [embed] })
+  //       .then(msg => {
+  //         setTimeout(() => {
+  //           msg.delete()
+  //         }, cooldownTime.getTime() - Date.now())
+  //       })
+  //       .catch(() => null)
+  //     return true
+  //   }
+  // }
 
-  Cooldown.set(message.author.id, getCooldownTime())
-  setTimeout(() => {
-    Cooldown.delete(message.author.id)
-  }, client.config.cooldown * 1000)
+  // if (client.config.cooldown > 0) {
+  //   Cooldown.set(message.author.id, getCooldownTime())
+  //   setTimeout(() => {
+  //     Cooldown.delete(message.author.id)
+  //   }, client.config.cooldown * 1000)
+  // }
+
+  const isBlockedByCooldown = await CooldownValidator(message, client, command)
+  if (isBlockedByCooldown) return true
 
   if (command.guildOnly && !message.guild) {
     return true

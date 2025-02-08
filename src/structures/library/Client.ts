@@ -7,6 +7,7 @@ import { UniCommand } from '../base/UniCommand.js'
 import { botCommandEventsManager } from '../events/index.js'
 import Logger from './Logger.js'
 import { ButtonManager } from '../base/ButtonManager.js'
+import { CooldownManager } from '../base/Cooldown.js'
 
 class Bot extends Client {
   public readonly config: Required<Config>
@@ -23,6 +24,8 @@ class Bot extends Client {
   public collections: Record<string, Collection<string, unknown>> = {}
   // a services object there people can add their own services classes to it then it will be accessible in the client
   public services: Record<string, unknown> = {}
+
+  public readonly cooldownManager = new CooldownManager()
 
   constructor (config?: Config) {
     super({
