@@ -15,7 +15,7 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
     this.client = client
   }
 
-  run (interaction: Interaction) {
+  async run (interaction: Interaction) {
     if (!interaction.isChatInputCommand()) return
     const client = this.client
 
@@ -33,13 +33,13 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
           ephemeral: true
         })
       }
-      const validation = SlashCommandValidator(
+      const validation = await SlashCommandValidator(
         interaction,
         subCommandFile,
         this.client
       )
 
-      if (!validation) return
+      if (validation) return
 
       try {
         if (!subCommandFile.run)
