@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.5.2
+
+### Patch Changes
+
+- a4fb143: Bug fix
+
 ## 0.5.1
 
 ### Patch Changes
