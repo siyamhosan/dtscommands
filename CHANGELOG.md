@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.5.1
+
+### Patch Changes
+
+- 57939ec: Slashcommand validation Fixes
+
 ## 0.5.0
 
 ### Minor Changes
