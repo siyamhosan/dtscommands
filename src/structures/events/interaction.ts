@@ -65,13 +65,13 @@ export class InteractionCommandEvent extends Event<'interactionCreate'> {
         })
       }
     } else if (slashCommand) {
-      const validation = SlashCommandValidator(
+      const validation = await SlashCommandValidator(
         interaction,
         slashCommand,
         this.client
       )
 
-      if (!validation) return
+      if (validation) return
 
       try {
         if (!slashCommand.run)
