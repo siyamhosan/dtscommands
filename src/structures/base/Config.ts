@@ -70,7 +70,7 @@ export type Config = {
   eventsDir: string
   uniCommandsDir: string
   slashCommandsDir: string
-  mentionMessage?: MentionMessage
+  mentionMessage?: MentionMessage | ((message: Message) => MentionMessage)
   cooldown?: CooldownConfigOptions
   customValidations?: CustomValidations[]
 }

@@ -23,10 +23,12 @@ export class CommandsEvent extends Event<'messageCreate'> {
 
     const mention = new RegExp(`^<@!?${client.user?.id}>( |)$`)
     if (message.content.match(mention)) {
-      message.channel.send(
-        // @ts-ignore
-        client.config.mentionMessage
-      )
+      const messageContent =
+        typeof client.config.mentionMessage === 'function'
+          ? client.config.mentionMessage(message)
+          : client.config.mentionMessage
+
+      message.channel.send(messageContent)
     }
     const escapeRegex = (str: string) =>
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
