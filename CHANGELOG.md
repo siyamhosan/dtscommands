@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.5.3
+
+### Patch Changes
+
+- 394e5d0: Configure able Mention Message
+
 ## 0.5.2
 
 ### Patch Changes
