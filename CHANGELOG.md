@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.5.4
+
+### Patch Changes
+
+- 83b6a96: Fixes on Mention Customizeable
+
 ## 0.5.3
 
 ### Patch Changes
