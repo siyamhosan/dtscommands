@@ -25,10 +25,14 @@ export class CommandsEvent extends Event<'messageCreate'> {
     if (message.content.match(mention)) {
       const messageContent =
         typeof client.config.mentionMessage === 'function'
-          ? client.config.mentionMessage(message)
+          ? await client.config.mentionMessage(message)
           : client.config.mentionMessage
 
-      message.channel.send(messageContent)
+      message.channel.send({
+        content: messageContent.content,
+        embeds: messageContent.embeds,
+        components: messageContent.components
+      })
     }
     const escapeRegex = (str: string) =>
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
