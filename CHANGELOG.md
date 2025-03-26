@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.6.0
+
+### Minor Changes
+
+- e46e388: Sharding Init | validation async able
+
 ## 0.5.4
 
 ### Patch Changes
