@@ -8,7 +8,9 @@ export async function CommandManager (
   exportedClasses: string[],
   allCommands: Record<string, any>
 ) {
-  console.info(chalk.bold('Loading Prefix Commands...'), chalk.bold('pre'))
+  if (!client.config.isSharding) {
+    console.info(chalk.bold('Loading Prefix Commands...'), chalk.bold('pre'))
+  }
   const startLoading = Date.now()
 
   const contents = [['No.', 'Name', 'Category']]
@@ -39,14 +41,16 @@ export async function CommandManager (
       ])
     }
   }
-  table(contents, TableConfig)
-    .split('\n')
-    .forEach(text => {
-      console.info(text, chalk.bold('pre'))
-    })
-  console.trace(
-    startLoading,
-    chalk.bold('Loaded Prefix Commands in: '),
-    chalk.bold('pre')
-  )
+  if (!client.config.isSharding) {
+    table(contents, TableConfig)
+      .split('\n')
+      .forEach(text => {
+        console.info(text, chalk.bold('pre'))
+      })
+    console.trace(
+      startLoading,
+      chalk.bold('Loaded Prefix Commands in: '),
+      chalk.bold('pre')
+    )
+  }
 }

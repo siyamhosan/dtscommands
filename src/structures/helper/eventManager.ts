@@ -13,7 +13,9 @@ export async function EventManager (
 ) {
   const contents = [['No.', 'Name', 'Nick']]
 
-  console.info(chalk.bold('Loading Events...'), chalk.bold('evt'))
+  if (!client.config.isSharding) {
+    console.info(chalk.bold('Loading Events...'), chalk.bold('evt'))
+  }
   const startLoading = Date.now()
 
   if (!exportedClasses) return
@@ -49,14 +51,16 @@ export async function EventManager (
     }
   }
 
-  table(contents, TableConfig)
-    .split('\n')
-    .forEach(text => {
-      console.info(text, chalk.bold('evt'))
-    })
-  console.trace(
-    startLoading,
-    chalk.bold('Loaded Events in: '),
-    chalk.bold('evt')
-  )
+  if (!client.config.isSharding) {
+    table(contents, TableConfig)
+      .split('\n')
+      .forEach(text => {
+        console.info(text, chalk.bold('evt'))
+      })
+    console.trace(
+      startLoading,
+      chalk.bold('Loaded Events in: '),
+      chalk.bold('evt')
+    )
+  }
 }

@@ -30,7 +30,10 @@ class Bot extends Client {
   constructor (config?: Config) {
     super({
       intents: config?.intents ?? defaultConfig.intents,
-      partials: config?.partials ?? defaultConfig.partials
+      partials: config?.partials ?? defaultConfig.partials,
+      shards: config?.isSharding ? config.shards : undefined,
+      shardCount: config?.isSharding ? config.shardCount : undefined,
+      presence: config?.isSharding ? config.presence : defaultConfig.presence
     })
 
     this.config = { ...defaultConfig, ...config }

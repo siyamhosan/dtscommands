@@ -14,10 +14,12 @@ export const SlashManager = async (
 
   const startTime = Date.now()
 
-  console.info(
-    chalk.bold('Loading Slash And Uni Commands...'),
-    chalk.bold('sla')
-  )
+  if (!client.config.isSharding) {
+    console.info(
+      chalk.bold('Loading Slash And Uni Commands...'),
+      chalk.bold('sla')
+    )
+  }
 
   if (
     !exportedClasses ||
@@ -78,36 +80,38 @@ export const SlashManager = async (
   ])
   contents.push([String(`${subCount}.`), ' of Total Sub Commands', 'Sub'])
 
-  table(contents, TableConfig)
-    .split('\n')
-    .forEach(text => {
-      console.info(text, chalk.bold('sla'))
-    })
-
-  console.trace(
-    startTime,
-    chalk.bold('Loaded Slash Commands In '),
-    chalk.bold('sla')
-  )
-
-  const rest = new REST({ version: '10' }).setToken(client.config.token || '')
-  ;(async () => {
-    try {
-      console.info('Started refreshing application (/) commands.', 'cmd')
-
-      const clientId = client.config.clientId
-      if (!clientId) {
-        throw new Error(
-          'Missing client id. Please set CLIENT_ID in .env or client constructor.'
-        )
-      }
-
-      await rest.put(Routes.applicationCommands(clientId), {
-        body: data
+  if (!client.config.isSharding) {
+    table(contents, TableConfig)
+      .split('\n')
+      .forEach(text => {
+        console.info(text, chalk.bold('sla'))
       })
-      console.info('Successfully reloaded application (/) commands.', 'cmd')
-    } catch (error) {
-      console.error(error)
-    }
-  })()
+
+    console.trace(
+      startTime,
+      chalk.bold('Loaded Slash Commands In '),
+      chalk.bold('sla')
+    )
+
+    const rest = new REST({ version: '10' }).setToken(client.config.token || '')
+    ;(async () => {
+      try {
+        console.info('Started refreshing application (/) commands.', 'cmd')
+
+        const clientId = client.config.clientId
+        if (!clientId) {
+          throw new Error(
+            'Missing client id. Please set CLIENT_ID in .env or client constructor.'
+          )
+        }
+
+        await rest.put(Routes.applicationCommands(clientId), {
+          body: data
+        })
+        console.info('Successfully reloaded application (/) commands.', 'cmd')
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }
 }

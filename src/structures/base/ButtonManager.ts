@@ -57,10 +57,10 @@ export async function ButtonValidation (
         if (!customValidation) continue
 
         if (
-          !customValidation.validate({
+          !(await customValidation.validate({
             message: undefined,
             interaction
-          })
+          }))
         ) {
           if (typeof customValidation.onFail === 'string') {
             await interaction.reply({
@@ -137,10 +137,10 @@ export async function ButtonValidation (
       if (!customValidation) continue
 
       if (
-        !customValidation.validate({
+        !(await customValidation.validate({
           message: undefined,
           interaction
-        })
+        }))
       ) {
         if (typeof customValidation.onFail === 'string') {
           embed.setDescription(customValidation.onFail)

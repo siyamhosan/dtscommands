@@ -179,10 +179,10 @@ export async function CommandValidator (
       if (!customValidation) continue
 
       if (
-        !customValidation.validate({
+        !(await customValidation.validate({
           message,
           interaction: undefined
-        })
+        }))
       ) {
         if (typeof customValidation.onFail === 'string') {
           embed.setDescription(customValidation.onFail)

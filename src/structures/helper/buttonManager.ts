@@ -10,7 +10,9 @@ export async function ButtonsManager (
   exportedClasses: string[],
   allButtons: Record<string, any>
 ) {
-  console.info(chalk.bold('Loading Button Managers...'), chalk.bold('btn'))
+  if (!client.config.isSharding) {
+    console.info(chalk.bold('Loading Button Managers...'), chalk.bold('btn'))
+  }
   const startLoading = Date.now()
 
   const contents = [['No.', 'Nickname', 'Category']]
@@ -36,14 +38,16 @@ export async function ButtonsManager (
       ])
     }
   }
-  table(contents, TableConfig)
-    .split('\n')
-    .forEach(text => {
-      console.info(text, chalk.bold('btn'))
-    })
-  console.trace(
-    startLoading,
-    chalk.bold('Loaded Buttons in: '),
-    chalk.bold('btn')
-  )
+  if (!client.config.isSharding) {
+    table(contents, TableConfig)
+      .split('\n')
+      .forEach(text => {
+        console.info(text, chalk.bold('btn'))
+      })
+    console.trace(
+      startLoading,
+      chalk.bold('Loaded Buttons in: '),
+      chalk.bold('btn')
+    )
+  }
 }
