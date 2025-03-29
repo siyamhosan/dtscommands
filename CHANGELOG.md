@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.7.0
+
+### Minor Changes
+
+- d1cc719: Client options shard Issuq Fixed
+
 ## 0.6.0
 
 ### Minor Changes
