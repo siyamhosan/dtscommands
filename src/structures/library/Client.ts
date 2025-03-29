@@ -1,5 +1,5 @@
 /* eslint-disable new-cap */
-import { Client, Collection } from 'discord.js'
+import { Client, ClientOptions, Collection } from 'discord.js'
 import { Command } from '../base/Command.js'
 import { Config, defaultConfig } from '../base/Config.js'
 import { SlashCommand } from '../base/SlashCommand.js'
@@ -28,13 +28,17 @@ class Bot extends Client {
   public readonly cooldownManager = new CooldownManager()
 
   constructor (config?: Config) {
-    super({
+    const superConfig: ClientOptions = {
       intents: config?.intents ?? defaultConfig.intents,
-      partials: config?.partials ?? defaultConfig.partials,
-      shards: config?.isSharding ? config.shards : undefined,
-      shardCount: config?.isSharding ? config.shardCount : undefined,
-      presence: config?.isSharding ? config.presence : defaultConfig.presence
-    })
+      partials: config?.partials ?? defaultConfig.partials
+    }
+
+    if (config?.isSharding) {
+      superConfig.shards = config.shards
+      superConfig.shardCount = config.shardCount
+    }
+
+    super(superConfig)
 
     this.config = { ...defaultConfig, ...config }
 
