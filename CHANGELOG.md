@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.8.0
+
+### Minor Changes
+
+- d51cd71: Validation Messages With Component Support
+
 ## 0.7.0
 
 ### Minor Changes
