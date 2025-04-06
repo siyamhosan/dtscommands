@@ -176,7 +176,10 @@ export async function CommandValidator (
       const customValidation = client.config.customValidations?.find(
         customValidation => customValidation.name === validation
       )
-      if (!customValidation) continue
+      if (!customValidation) {
+        console.warn(`Custom validation ${validation} not found`)
+        continue
+      }
 
       if (
         !(await customValidation.validate({
@@ -184,17 +187,21 @@ export async function CommandValidator (
           interaction: undefined
         }))
       ) {
-        if (typeof customValidation.onFail === 'string') {
-          embed.setDescription(customValidation.onFail)
-          message.channel.send({ embeds: [embed] })
-        } else if (customValidation.onFail instanceof EmbedBuilder) {
-          if (customValidation.onFail.toJSON().color === undefined)
-            customValidation.onFail.setColor(client.config.themeColors.ERROR)
+        const messageOptions =
+          typeof customValidation.onFail === 'function'
+            ? await customValidation.onFail({ message })
+            : customValidation.onFail
 
-          message.channel
-            .send({ embeds: [customValidation.onFail] })
-            .then(del9)
-            .catch(() => null)
+        if (typeof messageOptions === 'string') {
+          embed.setDescription(messageOptions)
+          message.channel.send({ embeds: [embed] })
+        } else {
+          try {
+            message.channel
+              .send(messageOptions)
+              .then(del9)
+              .catch(() => null)
+          } catch (error) {}
         }
 
         return true

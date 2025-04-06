@@ -1,10 +1,8 @@
 import chalk from 'chalk'
 import {
   ActivityType,
-  APIEmbed,
   GatewayIntentBits,
   Interaction,
-  JSONEncodable,
   Message,
   Partials,
   PresenceData
@@ -69,7 +67,16 @@ export type CustomValidations = {
     interaction?: Interaction
   }) => boolean | Promise<boolean>
   /** Message or embed to show when validation fails */
-  onFail: string | (JSONEncodable<APIEmbed> | APIEmbed)
+  onFail:
+    | MentionMessage
+    | (({
+        message,
+        interaction
+      }: {
+        message?: Message
+        interaction?: Interaction
+      }) => Promise<MentionMessage>)
+    | string
   /** Name of the validation rule */
   name: string
 }

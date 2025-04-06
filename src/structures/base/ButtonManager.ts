@@ -54,7 +54,10 @@ export async function ButtonValidation (
         const customValidation = client.config.customValidations?.find(
           customValidation => customValidation.name === validation
         )
-        if (!customValidation) continue
+        if (!customValidation) {
+          console.warn(`Custom validation ${validation} not found`)
+          continue
+        }
 
         if (
           !(await customValidation.validate({
@@ -62,19 +65,23 @@ export async function ButtonValidation (
             interaction
           }))
         ) {
-          if (typeof customValidation.onFail === 'string') {
-            await interaction.reply({
-              content: customValidation.onFail,
-              ephemeral: true
-            })
-          } else if (customValidation.onFail instanceof EmbedBuilder) {
-            if (customValidation.onFail.toJSON().color === undefined)
-              customValidation.onFail.setColor(client.config.themeColors.ERROR)
+          const messageOptions =
+            typeof customValidation.onFail === 'function'
+              ? await customValidation.onFail({ interaction })
+              : customValidation.onFail
 
+          if (typeof messageOptions === 'string') {
             await interaction.reply({
-              embeds: [customValidation.onFail],
+              content: messageOptions,
               ephemeral: true
             })
+          } else {
+            try {
+              await interaction.reply({
+                ...messageOptions,
+                ephemeral: true
+              })
+            } catch (error) {}
           }
           return true
         }
