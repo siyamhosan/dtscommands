@@ -71,6 +71,12 @@ import {
   del60,
   del80
 } from './structures/utils/del.js'
+import {
+  botCommandEventsManager,
+  CommandsEvent,
+  InteractionCommandEvent,
+  ButtonEvent
+} from './structures/events/index.js'
 
 export {
   // base structures
@@ -104,6 +110,10 @@ export {
   CooldownType,
   CooldownValidator,
   defaultCooldownMessage,
+  botCommandEventsManager,
+  CommandsEvent,
+  InteractionCommandEvent,
+  ButtonEvent,
   // events
   // helpers
   CommandManager,
