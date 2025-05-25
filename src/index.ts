@@ -42,7 +42,7 @@ import {
   CooldownValidator,
   defaultCooldownMessage
 } from './structures/base/Cooldown.js'
-
+import { PrefixManager } from './structures/base/prefixManager.js'
 // events
 
 // helpers
@@ -114,6 +114,7 @@ export {
   CommandsEvent,
   InteractionCommandEvent,
   ButtonEvent,
+  PrefixManager,
   // events
   // helpers
   CommandManager,

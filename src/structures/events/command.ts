@@ -9,7 +9,7 @@ import { ValidationError } from '../library/Error.js'
 export class CommandsEvent extends Event<'messageCreate'> {
   private client: Bot
 
-  constructor (client: Bot) {
+  constructor(client: Bot) {
     super({
       name: 'messageCreate',
       nick: 'preCommandsDirecter'
@@ -17,9 +17,18 @@ export class CommandsEvent extends Event<'messageCreate'> {
     this.client = client
   }
 
-  async run (message: Message<true>) {
+  async run(message: Message<true>) {
     const client = this.client
-    const prefix = client.config.prefix
+    let prefixs: string[] = []
+
+    if (typeof client.config.prefix === 'string') {
+      prefixs = [client.config.prefix]
+    } else {
+      const prefixManager = await client.config.prefix.getPrefix({ message })
+      prefixs = [client.config.prefix.mainPrefix, ...client.config.prefix.additionalPrefixes, ...prefixManager]
+    }
+
+    const prefix = prefixs[0] || ''
 
     const mention = new RegExp(`^<@!?${client.user?.id}>( |)$`)
     if (message.content.match(mention)) {
@@ -38,11 +47,7 @@ export class CommandsEvent extends Event<'messageCreate'> {
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
     const prefixRegex = new RegExp(
-      `^(<@!?${client.user?.id}>|${escapeRegex(prefix)}${
-        client.config.additionalPrefixes.length > 0
-          ? `|${client.config.additionalPrefixes.map(escapeRegex).join('|')}`
-          : ''
-      })\\s*`
+      `^(<@!?${client.user?.id}>|${escapeRegex(prefixs.join('|'))})\\s*`
     )
     if (!prefixRegex.test(message.content)) return
 

@@ -10,6 +10,7 @@ import {
 import path from 'path'
 import { TableUserConfig } from 'table'
 import { CooldownConfigOptions, defaultCooldownMessage } from './Cooldown'
+import { PrefixManager } from './prefixManager'
 
 /**
  * Represents a manager role configuration for a specific guild
@@ -68,15 +69,15 @@ export type CustomValidations = {
   }) => boolean | Promise<boolean>
   /** Message or embed to show when validation fails */
   onFail:
-    | MentionMessage
-    | (({
-        message,
-        interaction
-      }: {
-        message?: Message
-        interaction?: Interaction
-      }) => Promise<MentionMessage>)
-    | string
+  | MentionMessage
+  | (({
+    message,
+    interaction
+  }: {
+    message?: Message
+    interaction?: Interaction
+  }) => Promise<MentionMessage>)
+  | string
   /** Name of the validation rule */
   name: string
 }
@@ -125,7 +126,7 @@ export type Config = {
   themeColors?: ThemeColors
 
   /** The default command prefix */
-  prefix: string
+  prefix: string | PrefixManager
 
   /** Additional command prefixes */
   additionalPrefixes?: string[]
@@ -144,8 +145,8 @@ export type Config = {
 
   /** Configuration for the bot's mention response */
   mentionMessage?:
-    | MentionMessage
-    | ((message: Message) => Promise<MentionMessage>)
+  | MentionMessage
+  | ((message: Message) => Promise<MentionMessage>)
 
   /** Cooldown configuration for commands */
   cooldown?: CooldownConfigOptions
