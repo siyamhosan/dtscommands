@@ -75,7 +75,8 @@ export async function ButtonValidation (
               content: messageOptions,
               ephemeral: true
             })
-          } else {
+          } else if (messageOptions) {
+            // Add null check here
             try {
               await interaction.reply({
                 ...messageOptions,
@@ -149,17 +150,30 @@ export async function ButtonValidation (
           interaction
         }))
       ) {
-        if (typeof customValidation.onFail === 'string') {
-          embed.setDescription(customValidation.onFail)
-          await interaction.reply({ embeds: [embed], ephemeral: true })
-        } else if (customValidation.onFail instanceof EmbedBuilder) {
-          if (customValidation.onFail.toJSON().color === undefined)
-            customValidation.onFail.setColor(client.config.themeColors.ERROR)
+        const messageOptions =
+          typeof customValidation.onFail === 'function'
+            ? await customValidation.onFail({ interaction })
+            : customValidation.onFail
 
+        if (typeof messageOptions === 'string') {
+          embed.setDescription(messageOptions)
+          await interaction.reply({ embeds: [embed], ephemeral: true })
+        } else if (messageOptions instanceof EmbedBuilder) {
+          if (messageOptions.toJSON().color === undefined) {
+            messageOptions.setColor(client.config.themeColors.ERROR)
+          }
           await interaction.reply({
-            embeds: [customValidation.onFail],
+            embeds: [messageOptions],
             ephemeral: true
           })
+        } else if (messageOptions) {
+          // Handle other message options
+          try {
+            await interaction.reply({
+              ...messageOptions,
+              ephemeral: true
+            })
+          } catch (error) {}
         }
         return true
       }

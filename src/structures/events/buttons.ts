@@ -1,10 +1,8 @@
 import chalk from 'chalk'
-import { ButtonInteraction, Message } from 'discord.js'
-import { CommandValidator } from '../base/Command.js'
+import { ButtonInteraction } from 'discord.js'
 import { Event } from '../base/Event.js'
-import { UniCommandValidator } from '../base/UniCommand.js'
 import Bot from '../library/Client.js'
-import { ButtonManager, ButtonValidation } from '../base/ButtonManager.js'
+import { ButtonValidation } from '../base/ButtonManager.js'
 
 export class ButtonEvent extends Event<'interactionCreate'> {
   private client: Bot
@@ -21,12 +19,15 @@ export class ButtonEvent extends Event<'interactionCreate'> {
     if (!interaction.isButton()) return
     const client = this.client
 
-    let buttonHandler: ButtonManager | undefined
-    client.buttons.forEach(button => {
-      if (button.customIdValidation(interaction.customId)) {
-        buttonHandler = button
+    // Get button handler from the latest collection reference
+    let buttonHandler = undefined
+    for (const [validator, handler] of client.buttons.entries()) {
+      if (validator(interaction.customId)) {
+        buttonHandler = handler
+        break
       }
-    })
+    }
+
     if (!buttonHandler) return
 
     if (await ButtonValidation(interaction, buttonHandler, client)) return

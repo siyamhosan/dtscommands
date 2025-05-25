@@ -51,11 +51,10 @@ export class CommandsEvent extends Event<'messageCreate'> {
     const args = message.content.slice(matchedPrefix.length).trim().split(/ +/)
     const commandName = args.shift()?.toLowerCase() || ''
 
+    // Get command from the latest collection reference
     const command =
       client.commands.get(commandName) ||
-      client.commands.find(
-        cmd => cmd.aliases && cmd.aliases.includes(commandName)
-      )
+      client.commands.get(client.aliases.get(commandName) || '')
 
     const uniCommand =
       client.uniCommands.get(commandName) ||
