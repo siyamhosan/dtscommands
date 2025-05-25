@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.10.0
+
+### Minor Changes
+
+- c484f0b: Prefix Manager, Dynamic Prefix System
+
 ## 0.9.1
 
 ### Patch Changes
