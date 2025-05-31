@@ -32,18 +32,6 @@ export class CommandsEvent extends Event<'messageCreate'> {
       ]
     }
 
-    console.log({
-      context: 'Command Event Line 32 - Prefixes Debug',
-      prefixs,
-      messageContent: message.content,
-      messageAuthor: message.author.username,
-      messageChannel: message.channel.name,
-      messageGuild: message.guild?.name,
-      messageId: message.id,
-      messageTimestamp: message.createdTimestamp,
-      messageAuthorId: message.author.id
-    })
-
     const prefix = prefixs[0] || ''
 
     const mention = new RegExp(`^<@!?${client.user?.id}>( |)$`)
@@ -62,8 +50,11 @@ export class CommandsEvent extends Event<'messageCreate'> {
     const escapeRegex = (str: string) =>
       str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
+    const escapedPrefixes = prefixs.map(escapeRegex)
+    const prefixesRegexPart = escapedPrefixes.join('|')
+
     const prefixRegex = new RegExp(
-      `^(<@!?${client.user?.id}>|${escapeRegex(prefixs.join('|'))})\\s*`
+      `^(<@!?${client.user?.id}>|${prefixesRegexPart})\\s*`
     )
     if (!prefixRegex.test(message.content)) return
 
