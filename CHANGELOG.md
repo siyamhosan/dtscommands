@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.10.2
+
+### Patch Changes
+
+- 83a0c55: Log Removed Bug Fixed?
+
 ## 0.10.1
 
 ### Patch Changes
