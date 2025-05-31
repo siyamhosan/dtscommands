@@ -9,7 +9,7 @@ import { ValidationError } from '../library/Error.js'
 export class CommandsEvent extends Event<'messageCreate'> {
   private client: Bot
 
-  constructor(client: Bot) {
+  constructor (client: Bot) {
     super({
       name: 'messageCreate',
       nick: 'preCommandsDirecter'
@@ -17,7 +17,7 @@ export class CommandsEvent extends Event<'messageCreate'> {
     this.client = client
   }
 
-  async run(message: Message<true>) {
+  async run (message: Message<true>) {
     const client = this.client
     let prefixs: string[] = []
 
@@ -25,8 +25,24 @@ export class CommandsEvent extends Event<'messageCreate'> {
       prefixs = [client.config.prefix]
     } else {
       const prefixManager = await client.config.prefix.getPrefix({ message })
-      prefixs = [client.config.prefix.mainPrefix, ...client.config.prefix.additionalPrefixes, ...prefixManager]
+      prefixs = [
+        client.config.prefix.mainPrefix,
+        ...client.config.prefix.additionalPrefixes,
+        ...prefixManager
+      ]
     }
+
+    console.log({
+      context: 'Command Event Line 32 - Prefixes Debug',
+      prefixs,
+      messageContent: message.content,
+      messageAuthor: message.author.username,
+      messageChannel: message.channel.name,
+      messageGuild: message.guild?.name,
+      messageId: message.id,
+      messageTimestamp: message.createdTimestamp,
+      messageAuthorId: message.author.id
+    })
 
     const prefix = prefixs[0] || ''
 
