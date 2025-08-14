@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.11.0
+
+### Minor Changes
+
+- a43aa69: Guild Only Validation Global/Command
+
 ## 0.10.2
 
 ### Patch Changes
