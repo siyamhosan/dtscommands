@@ -69,15 +69,15 @@ export type CustomValidations = {
   }) => boolean | Promise<boolean>
   /** Message or embed to show when validation fails */
   onFail:
-  | MentionMessage
-  | (({
-    message,
-    interaction
-  }: {
-    message?: Message
-    interaction?: Interaction
-  }) => Promise<MentionMessage>)
-  | string
+    | MentionMessage
+    | (({
+        message,
+        interaction
+      }: {
+        message?: Message
+        interaction?: Interaction
+      }) => Promise<MentionMessage>)
+    | string
   /** Name of the validation rule */
   name: string
 }
@@ -145,8 +145,8 @@ export type Config = {
 
   /** Configuration for the bot's mention response */
   mentionMessage?:
-  | MentionMessage
-  | ((message: Message) => Promise<MentionMessage>)
+    | MentionMessage
+    | ((message: Message) => Promise<MentionMessage>)
 
   /** Cooldown configuration for commands */
   cooldown?: CooldownConfigOptions
@@ -165,6 +165,9 @@ export type Config = {
 
   /** Bot presence configuration */
   presence?: PresenceData
+
+  /** Whether to enable guild only commands (GLOBAL DEFAULT: false) */
+  guildOnly?: boolean
 }
 
 /**
@@ -228,7 +231,8 @@ export const defaultConfig: Required<Config> = {
   presence: {
     status: 'online',
     activities: [{ name: 'with dtscommands', type: ActivityType.Playing }]
-  }
+  },
+  guildOnly: false
 }
 
 /**

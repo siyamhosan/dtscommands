@@ -30,6 +30,8 @@ export interface SlashCommandOptions {
   beta?: boolean
   validation?: string[]
   cooldown?: CommandCooldownOptions
+  /** Whether to enable guild only commands (DEFAULT: false) */
+  guildOnly?: boolean
 }
 
 export abstract class SlashCommand {
@@ -41,6 +43,7 @@ export abstract class SlashCommand {
   readonly beta: boolean
   readonly validation: string[]
   readonly cooldown: CommandCooldownOptions | undefined
+  readonly guildOnly: boolean
 
   constructor (options: SlashCommandOptions) {
     this.data = options.data || undefined
@@ -51,6 +54,7 @@ export abstract class SlashCommand {
     this.beta = options.beta || false
     this.validation = options.validation || []
     this.cooldown = options.cooldown || undefined
+    this.guildOnly = options.guildOnly || false
   }
 
   public abstract run?(options: SlashCommandRun): void
@@ -62,6 +66,22 @@ export async function SlashCommandValidator (
   client: Bot
 ): Promise<boolean> {
   const embed = new EmbedBuilder().setColor(Colors.Red)
+
+  if ((cmd.guildOnly || client.config.guildOnly) && !interaction.guild) {
+    embed.setDescription('This command can only be used in a server.')
+    if (interaction.replied) {
+      interaction.editReply({
+        embeds: [embed]
+      })
+      return true
+    } else {
+      interaction.reply({
+        embeds: [embed]
+      })
+      return true
+    }
+  }
+
   if (cmd.botPerms) {
     if (
       !interaction.guild?.members.me?.permissions.has(

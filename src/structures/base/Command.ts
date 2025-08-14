@@ -130,7 +130,13 @@ export async function CommandValidator (
   const isBlockedByCooldown = await CooldownValidator(message, client, command)
   if (isBlockedByCooldown) return true
 
-  if (command.guildOnly && !message.guild) {
+  if ((command.guildOnly || client.config.guildOnly) && !message.guild) {
+    const embed = new EmbedBuilder().setColor(client.config.themeColors.ERROR)
+    embed.setDescription('This command can only be used in a server.')
+    message.channel
+      .send({ embeds: [embed] })
+      .then(del9)
+      .catch(() => null)
     return true
   }
 
