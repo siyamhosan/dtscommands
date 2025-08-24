@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.11.1
+
+### Patch Changes
+
+- ad0b881: Error Log fixed! With stack
+
 ## 0.11.0
 
 ### Minor Changes
