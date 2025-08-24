@@ -6,7 +6,7 @@ interface Logger extends Console {
   info(text: string, group?: string): void
   warn(text: string, group?: string): void
   debug(text: string, group?: string): void
-  error(text: string, group?: string): void
+  error(text: string | Error, group?: string): void
   trace(start: number, text: string, group?: string): void
 }
 
@@ -35,11 +35,16 @@ function Logger () {
     else backup.info(`[${d} ${colorize('warn')}] ${text}`)
   }
 
-  myConsole.error = (text: string, group?: string) => {
+  myConsole.error = (text: string | Error, group?: string) => {
     const d = new Date().toLocaleString().toUpperCase().replace(', ', ' ')
+    const errorMessage = text instanceof Error ? text.message : text
+    const stack = text instanceof Error ? '\n' + text.stack : ''
 
-    if (group) backup.info(`[${d} ${colorize('error')}] [${group}] ${text}`)
-    else backup.info(`[${d} ${colorize('error')}] ${text}`)
+    if (group)
+      backup.error(
+        `[${d} ${colorize('error')}] [${group}] ${errorMessage}${stack}`
+      )
+    else backup.error(`[${d} ${colorize('error')}] ${errorMessage}${stack}`)
   }
 
   myConsole.debug = (text: string, group?: string) => {
