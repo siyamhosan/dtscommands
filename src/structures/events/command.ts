@@ -25,11 +25,15 @@ export class CommandsEvent extends Event<'messageCreate'> {
       prefixs = [client.config.prefix]
     } else {
       const prefixManager = await client.config.prefix.getPrefix({ message })
-      prefixs = [
-        client.config.prefix.mainPrefix,
-        ...client.config.prefix.additionalPrefixes,
-        ...prefixManager
-      ]
+      if (client.config.prefix.onCustomAllowMain) {
+        prefixs = [
+          client.config.prefix.mainPrefix,
+          ...client.config.prefix.additionalPrefixes,
+          ...prefixManager
+        ]
+      } else {
+        prefixs = [...prefixManager, ...client.config.prefix.additionalPrefixes]
+      }
     }
 
     const prefix = prefixs[0] || ''
