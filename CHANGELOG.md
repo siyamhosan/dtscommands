@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 0.11.2
+
+### Patch Changes
+
+- a8a96cf: Allow Both/Only Custom Prefix
+
 ## 0.11.1
 
 ### Patch Changes
