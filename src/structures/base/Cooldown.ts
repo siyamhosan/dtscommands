@@ -6,19 +6,19 @@ import {
   EmbedBuilder,
   Interaction,
   Message,
-  MessageCreateOptions
-} from 'discord.js'
-import Bot from '../library/Client'
-import { ButtonManager } from './ButtonManager'
-import { Command } from './Command'
-import { SlashCommand } from './SlashCommand'
+  MessageCreateOptions,
+} from "discord.js";
+import Bot from "../library/Client";
+import { ButtonManager } from "./ButtonManager";
+import { Command } from "../commands/Command";
+import { SlashCommand } from "./SlashCommand";
 
-export type CooldownType = 'global' | 'specified'
+export type CooldownType = "global" | "specified";
 
 export type CooldownMessageCreator = (
   timeLeft: number,
-  ctx: Command | SlashCommand | ButtonManager
-) => BaseMessageOptions
+  ctx: Command | SlashCommand | ButtonManager,
+) => BaseMessageOptions;
 
 /**
  * Configuration options for command CooldownS
@@ -41,131 +41,191 @@ export type CooldownMessageCreator = (
  * @returns {MessageCreateOptions|string|EmbedBuilder} The message to send
  */
 export interface CooldownConfigOptions {
-  enabled: boolean
-  duration: number
-  type: CooldownType
+  enabled: boolean;
+  duration: number;
+  type: CooldownType;
   cooldownCheck?: ({
     message,
-    interaction
+    interaction,
   }: {
-    message?: Message
-    interaction?: ChatInputCommandInteraction | ButtonInteraction
-  }) => boolean
-  messageCreator: CooldownMessageCreator
+    message?: Message;
+    interaction?: ChatInputCommandInteraction | ButtonInteraction;
+  }) => boolean;
+  messageCreator: CooldownMessageCreator;
 }
 
-export type CommandCooldownOptions = CooldownConfigOptions | boolean
+export type CommandCooldownOptions = CooldownConfigOptions | boolean;
 
 export class CooldownManager {
-  private cooldowns: Collection<string, number>
+  private cooldowns: Collection<string, number>;
+  private cleanupInterval: NodeJS.Timeout | null = null;
+  private readonly CLEANUP_INTERVAL = 60000; // Clean up every minute
+  private readonly MAX_COOLDOWNS = 10000; // Maximum number of cooldowns to store
 
-  constructor () {
-    this.cooldowns = new Collection()
+  constructor() {
+    this.cooldowns = new Collection();
+    this.startCleanupInterval();
   }
 
-  generateKey (commandName: string, type: string, id: string): string {
-    this.cleanupExpired()
-    return `${commandName}-${type}-${id}`
+  private startCleanupInterval(): void {
+    // Clear any existing interval
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+
+    // Set up periodic cleanup to prevent memory leaks
+    this.cleanupInterval = setInterval(() => {
+      this.cleanupExpired();
+    }, this.CLEANUP_INTERVAL);
   }
 
-  getRemainingTime (key: string): number | null {
-    const cooldown = this.cooldowns.get(key) || 0
-    const now = Date.now()
-    this.cleanupExpired()
-    return cooldown > now ? cooldown - now : null
+  generateKey(commandName: string, type: string, id: string): string {
+    return `${commandName}-${type}-${id}`;
   }
 
-  clearCooldown (key: string): void {
-    this.cooldowns.delete(key)
+  getRemainingTime(key: string): number | null {
+    const cooldown = this.cooldowns.get(key);
+    if (!cooldown) return null;
+
+    const now = Date.now();
+    const remaining = cooldown - now;
+
+    // If expired, remove it immediately
+    if (remaining <= 0) {
+      this.cooldowns.delete(key);
+      return null;
+    }
+
+    return remaining;
   }
 
-  setCooldown (key: string, duration: number): void {
-    const now = Date.now()
-    this.cooldowns.set(key, now + duration)
-    this.cleanupExpired()
+  clearCooldown(key: string): void {
+    this.cooldowns.delete(key);
   }
 
-  cleanupExpired (): void {
-    const now = Date.now()
+  setCooldown(key: string, duration: number): void {
+    // Prevent memory overflow by limiting the number of stored cooldowns
+    if (this.cooldowns.size >= this.MAX_COOLDOWNS) {
+      this.cleanupExpired();
+
+      // If still at max capacity after cleanup, remove oldest entries
+      if (this.cooldowns.size >= this.MAX_COOLDOWNS) {
+        const entries = Array.from(this.cooldowns.entries());
+        entries.sort((a, b) => a[1] - b[1]); // Sort by expiry time
+
+        // Remove the oldest 10% of entries
+        const toRemove = Math.floor(this.MAX_COOLDOWNS * 0.1);
+        for (let i = 0; i < toRemove && i < entries.length; i++) {
+          this.cooldowns.delete(entries[i]?.[0] ?? "");
+        }
+      }
+    }
+
+    const now = Date.now();
+    this.cooldowns.set(key, now + duration);
+  }
+
+  cleanupExpired(): void {
+    const now = Date.now();
+    const keysToDelete: string[] = [];
+
+    // Collect expired keys first to avoid modifying collection during iteration
     this.cooldowns.forEach((expiry, key) => {
       if (expiry <= now) {
-        this.cooldowns.delete(key)
+        keysToDelete.push(key);
       }
-    })
+    });
+
+    // Delete expired entries
+    keysToDelete.forEach((key) => {
+      this.cooldowns.delete(key);
+    });
+  }
+
+  // Method to properly destroy the manager and prevent memory leaks
+  destroy(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+    this.cooldowns.clear();
+  }
+
+  // Get current stats for monitoring
+  getStats(): { size: number; maxSize: number } {
+    return {
+      size: this.cooldowns.size,
+      maxSize: this.MAX_COOLDOWNS,
+    };
   }
 }
 
 export const defaultCooldownMessage = (
   timeLeft: number,
-  ctx: Command | SlashCommand | ButtonManager
+  ctx: Command | SlashCommand | ButtonManager,
 ): MessageCreateOptions => {
   const commandName =
     ctx instanceof Command
-      ? ctx.name
+      ? ctx.options.name
       : ctx instanceof SlashCommand
-      ? ctx.data?.name ?? ctx.subCommand
-      : ctx instanceof ButtonManager
-      ? ctx.nickname
-      : 'Unknown'
+        ? (ctx.data?.name ?? ctx.subCommand)
+        : ctx instanceof ButtonManager
+          ? ctx.nickname
+          : "Unknown";
 
   const embed = new EmbedBuilder()
-    .setTitle('Cooldown')
+    .setTitle("Cooldown")
     .setDescription(
-      `You are on cooldown for the action \`${commandName}\`. Please wait ${timeLeft}ms before using it again.`
+      `You are on cooldown for the action \`${commandName}\`. Please wait ${Math.ceil(timeLeft / 1000)}s before using it again.`,
     )
-    .setColor('Red')
+    .setColor("Red");
 
-  return { embeds: [embed] }
-}
+  return { embeds: [embed] };
+};
 
-export async function CooldownValidator (
+export async function CooldownValidator(
   interaction: ButtonInteraction | Message | ChatInputCommandInteraction,
   client: Bot,
-  ctx: Command | SlashCommand | ButtonManager
+  ctx: Command,
 ): Promise<boolean> {
-  let isCooldownEnabled = false
-  let duration = 3000
-  let messageOption: CooldownMessageCreator = defaultCooldownMessage
-  const commandName =
-    (ctx instanceof Command
-      ? ctx.name
-      : ctx instanceof SlashCommand
-      ? ctx.data?.name ?? ctx.subCommand
-      : ctx.nickname) ?? 'Unknown'
+  let isCooldownEnabled = false;
+  let duration = 3000;
+  let messageOption: CooldownMessageCreator = defaultCooldownMessage;
+  const commandName = ctx.options.name ?? "Unknown";
 
-  const cooldown = ctx.cooldown
+  const cooldown = ctx.options.commandCooldown;
 
   if (client.config.cooldown.enabled) {
-    isCooldownEnabled = true
-    messageOption = client.config.cooldown.messageCreator
-    duration = client.config.cooldown.duration
+    isCooldownEnabled = true;
+    messageOption = client.config.cooldown.messageCreator;
+    duration = client.config.cooldown.duration;
 
-    if (client.config.cooldown.type === 'global') {
-      if (typeof cooldown === 'boolean') {
-        isCooldownEnabled = cooldown
+    if (client.config.cooldown.type === "global") {
+      if (typeof cooldown === "boolean") {
+        isCooldownEnabled = cooldown;
       } else if (
-        typeof cooldown === 'object' &&
-        'enabled' in cooldown &&
-        'messageCreator' in cooldown &&
-        'duration' in cooldown
+        typeof cooldown === "object" &&
+        "enabled" in cooldown &&
+        "messageCreator" in cooldown &&
+        "duration" in cooldown
       ) {
-        isCooldownEnabled = cooldown.enabled
-        messageOption = cooldown.messageCreator
-        duration = cooldown.duration
+        isCooldownEnabled = cooldown.enabled;
+        messageOption = cooldown.messageCreator;
+        duration = cooldown.duration;
       }
-    } else if (client.config.cooldown.type === 'specified') {
+    } else if (client.config.cooldown.type === "specified") {
       if (cooldown) {
-        if (typeof cooldown === 'boolean') {
-          isCooldownEnabled = cooldown
+        if (typeof cooldown === "boolean") {
+          isCooldownEnabled = cooldown;
         } else if (
-          typeof cooldown === 'object' &&
-          'enabled' in cooldown &&
-          'messageCreator' in cooldown &&
-          'duration' in cooldown
+          typeof cooldown === "object" &&
+          "enabled" in cooldown &&
+          "messageCreator" in cooldown &&
+          "duration" in cooldown
         ) {
-          isCooldownEnabled = cooldown.enabled
-          messageOption = cooldown.messageCreator
-          duration = cooldown.duration
+          isCooldownEnabled = cooldown.enabled;
+          messageOption = cooldown.messageCreator;
+          duration = cooldown.duration;
         }
       }
     }
@@ -176,51 +236,65 @@ export async function CooldownValidator (
       const extraCheck = client.config.cooldown.cooldownCheck({
         message: interaction instanceof Message ? interaction : undefined,
         interaction:
-          interaction instanceof ButtonInteraction ? interaction : undefined
-      })
+          interaction instanceof ButtonInteraction ||
+          interaction instanceof ChatInputCommandInteraction
+            ? interaction
+            : undefined,
+      });
 
-      isCooldownEnabled = extraCheck && isCooldownEnabled
+      isCooldownEnabled = extraCheck && isCooldownEnabled;
     }
 
     const key = client.cooldownManager.generateKey(
       commandName,
-      'user',
+      "user",
       interaction instanceof Message
         ? interaction.author.id
-        : interaction.user.id
-    )
-    const remainingTime = client.cooldownManager.getRemainingTime(key)
-    if (!remainingTime) {
-      client.cooldownManager.setCooldown(key, duration)
-    }
+        : interaction.user.id,
+    );
+
+    const remainingTime = client.cooldownManager.getRemainingTime(key);
 
     if (remainingTime) {
-      const message = messageOption(remainingTime, ctx)
-      if (interaction instanceof Message) {
-        const msg = await interaction.reply(message)
-        setTimeout(async () => {
-          try {
-            await msg.delete()
-          } catch (error) {
-            console.error('Failed to delete cooldown message:', error)
-          }
-        }, remainingTime)
-      } else {
-        await interaction.reply({ ...message, fetchReply: true })
-        setTimeout(async () => {
-          try {
-            await interaction.deleteReply()
-          } catch (error) {
-            console.error('Failed to delete cooldown message:', error)
-          }
-        }, remainingTime)
+      // User is on cooldown, send message
+      const message = messageOption(remainingTime, ctx);
+
+      try {
+        if (interaction instanceof Message) {
+          const msg = await interaction.reply(message);
+
+          // Use a more reasonable timeout and add error handling
+          const deleteTimeout = Math.min(remainingTime, 30000); // Max 30 seconds
+          const timeoutId = setTimeout(async () => {
+            try {
+              if (msg.deletable) {
+                await msg.delete();
+              }
+            } catch (error) {
+              // Silently handle deletion errors (message might already be deleted)
+            }
+          }, deleteTimeout);
+
+          // Clear timeout if process is shutting down to prevent memory leaks
+          process.once("SIGTERM", () => clearTimeout(timeoutId));
+          process.once("SIGINT", () => clearTimeout(timeoutId));
+        } else {
+          await interaction.reply({ ...message, ephemeral: true });
+
+          // For interactions, we don't need to delete the reply as ephemeral messages auto-delete
+          // and deleteReply() can cause issues if the interaction is already handled
+        }
+      } catch (error) {
+        console.error("Failed to send cooldown message:", error);
       }
 
-      return true
+      return true;
+    } else {
+      // No cooldown active, set new cooldown
+      client.cooldownManager.setCooldown(key, duration);
+      return false;
     }
-
-    return false
   }
 
-  return false
+  return false;
 }
