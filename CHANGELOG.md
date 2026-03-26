@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 2.0.0
+
+### Major Changes
+
+- e109441: Heading to a new arc
+
 ## 0.11.2
 
 ### Patch Changes
@@ -47,7 +53,6 @@
 ### Minor Changes
 
 - 9c6bdf5: ### Added
-
   - **Dynamic Command Management**: Commands, slash commands, universal commands, and button handlers can now be added, removed, and updated at runtime without requiring a bot restart
     - `addCommand()` / `removeCommand()` - Manage regular commands dynamically
     - `addSlashCommand()` / `removeSlashCommand()` - Manage slash commands with automatic Discord API registration
@@ -60,12 +65,10 @@
     - Proper Discord API integration for slash command registration
 
   ### Changed
-
   - Event handlers now always use the latest collection references, ensuring dynamic updates take effect immediately
   - Button event handler improved to use more efficient lookup method
 
   ### Technical Details
-
   - Zero-downtime command updates for production bots
   - Memory-safe command replacement (old instances are properly cleaned up)
   - Rate-limit aware Discord API integration for slash commands
