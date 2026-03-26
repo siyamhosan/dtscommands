@@ -1,10 +1,9 @@
-import { PermissionResolvable, SlashCommandBuilder } from "discord.js";
-``;
+import { PermissionResolvable } from "discord.js";
 import { CooldownConfigOptions } from "../base/Cooldown";
 import Bot from "../library/Client";
+import { CommandPipeline, PipelineCtx } from "../pipeline/Pipeline";
 import { CommandContext } from "./Context";
 import { ArgBuilder, ResolvedArgs } from "./args";
-import { CommandPipeline, PipelineCtx } from "../pipeline/Pipeline";
 
 export interface CommandLoaderContext {
   // client: Bot;

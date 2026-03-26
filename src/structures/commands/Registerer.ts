@@ -22,7 +22,7 @@ class CommandRegisterer {
 
   constructor() {}
 
-  public registerCommand(commands: Command | Command[]) {
+  public register(commands: Command | Command[]) {
     if (commands instanceof Command) {
       this.commands.push(commands);
     } else if (Array.isArray(commands)) {
@@ -425,3 +425,5 @@ class CommandRegisterer {
     }
   }
 }
+
+export default CommandRegisterer;

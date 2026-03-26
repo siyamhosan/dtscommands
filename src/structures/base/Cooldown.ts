@@ -8,16 +8,14 @@ import {
   Message,
   MessageCreateOptions,
 } from "discord.js";
-import Bot from "../library/Client";
-import { ButtonManager } from "./ButtonManager";
 import { Command } from "../commands/Command";
-import { SlashCommand } from "./SlashCommand";
+import Bot from "../library/Client";
 
 export type CooldownType = "global" | "specified";
 
 export type CooldownMessageCreator = (
   timeLeft: number,
-  ctx: Command | SlashCommand | ButtonManager,
+  ctx: Command,
 ) => BaseMessageOptions;
 
 /**
@@ -162,16 +160,9 @@ export class CooldownManager {
 
 export const defaultCooldownMessage = (
   timeLeft: number,
-  ctx: Command | SlashCommand | ButtonManager,
+  ctx: Command,
 ): MessageCreateOptions => {
-  const commandName =
-    ctx instanceof Command
-      ? ctx.options.name
-      : ctx instanceof SlashCommand
-        ? (ctx.data?.name ?? ctx.subCommand)
-        : ctx instanceof ButtonManager
-          ? ctx.nickname
-          : "Unknown";
+  const commandName = ctx.options.name;
 
   const embed = new EmbedBuilder()
     .setTitle("Cooldown")
