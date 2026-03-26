@@ -1,6 +1,6 @@
 {
   "name": "dtscommands",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0",
   "description": "A Command Manager For Discord.js & Typescript for easy command creation and management.  ",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -29,9 +29,6 @@
     "prepublishOnly": "pnpm run build",
     "release": "pnpm run build && changeset publish",
     "lint": "tsc -p tsconfig.json"
-  },
-  "publishConfig": {
-    "tag": "beta"
   },
   "keywords": [],
   "author": "",
