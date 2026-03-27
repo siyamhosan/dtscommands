@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 2.0.3
+
+### Patch Changes
+
+- 0625f6a: ArgsResolver Prefix trim
+
 ## 2.0.2
 
 ### Patch Changes
