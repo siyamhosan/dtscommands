@@ -6,15 +6,15 @@ import {
   MessageFlags,
   PermissionsBitField,
 } from "discord.js";
-import Bot from "../library/Client";
-import { Command } from "./Command";
 import { CooldownValidator } from "../base/Cooldown";
+import Bot from "../library/Client";
 import { CommandPipeline, PipelineCtx } from "../pipeline/Pipeline";
+import { parseArgsFromMessage } from "../utils/prefix";
+import { Command } from "./Command";
 import { CommandCTX } from "./Context";
 import {
   ChatCommandInteractionArgsResolver,
-  PrefixCommandInteractionArgsResolver,
-  ResolvedArgs,
+  PrefixCommandInteractionArgsResolver
 } from "./args";
 
 class CommandRegisterer {
@@ -196,43 +196,10 @@ class CommandRegisterer {
   }
 
   public async handlePrefixCommandInteraction(message: Message, client: Bot) {
-    let prefixs: string[] = [];
-
-    if (typeof client.config.prefix === "string") {
-      prefixs = [client.config.prefix];
-    } else {
-      const prefixManager = await client.config.prefix.getPrefix({ message });
-      if (client.config.prefix.onCustomAllowMain) {
-        prefixs = [
-          client.config.prefix.mainPrefix,
-          ...client.config.prefix.additionalPrefixes,
-          ...prefixManager,
-        ];
-      } else {
-        prefixs = [
-          ...prefixManager,
-          ...client.config.prefix.additionalPrefixes,
-        ];
-      }
+    const { prefix, commandName, args } = await parseArgsFromMessage(client, message);
+    if (commandName === "") {
+      return;
     }
-
-    const prefix = prefixs[0] || "";
-
-    const escapeRegex = (str: string) =>
-      str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-    const escapedPrefixes = prefixs.map(escapeRegex);
-    const prefixesRegexPart = escapedPrefixes.join("|");
-
-    const prefixRegex = new RegExp(
-      `^(<@!?${client.user?.id}>|${prefixesRegexPart})\\s*`,
-    );
-    if (!prefixRegex.test(message.content)) return;
-
-    const [matchedPrefix] = message.content.match(prefixRegex) || [""];
-
-    const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
-    const commandName = args.shift()?.toLowerCase() || "";
 
     const command = this.commands.find(
       (c) =>
@@ -405,7 +372,7 @@ class CommandRegisterer {
         client,
         message,
         command,
-      );
+      );  
 
       await command.run({
         ctx,

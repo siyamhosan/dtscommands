@@ -12,6 +12,7 @@ import {
 import Bot from "../library/Client";
 import { Command } from "./Command";
 import { CommandContext } from "./Context";
+import { parseArgsFromMessage } from "../utils/prefix";
 
 export type ArgType =
   | "string"
@@ -465,14 +466,16 @@ export async function PrefixCommandInteractionArgsResolver(
   message: Message,
   command: Command,
 ) {
+  const { args: argValues } = await parseArgsFromMessage(client, message);
+
   const args = command.options.commandArgs;
-  if (!args) return new ResolvedArgs({});
+  if (!args || args.length === 0) return new ResolvedArgs({});
 
   const resolvedArgs: ParsedArgs = {};
 
   args.forEach(async (arg, index) => {
     const argDef = arg.toJson();
-    let argValue = message.content.split(/ +/)[index];
+    let argValue = argValues[index];
     if (!argValue) {
       argValue = argDef.default as string | undefined;
     }
