@@ -10,6 +10,20 @@ interface InternalStage {
   onFail?: (ctx: object) => void | Promise<void>;
 }
 
+const createStageContext = (base: object, enrichment: object): object => {
+  const stageCtx = Object.create(base);
+  for (const [key, value] of Object.entries(enrichment)) {
+    // Define own data properties to avoid writing through readonly prototype setters.
+    Object.defineProperty(stageCtx, key, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+  }
+  return stageCtx;
+};
+
 /**
  * A typesafe sequential validation pipeline.
  *
@@ -88,7 +102,7 @@ export class CommandPipeline<
   ): Promise<TRegistry[TName] | null> {
     let enrichment: object = {};
     for (const s of this._stages) {
-      const stageCtx = Object.assign(Object.create(base as object), enrichment);
+      const stageCtx = createStageContext(base as object, enrichment);
       const result = await s.run(stageCtx);
       if (result === false) {
         await s.onFail?.(stageCtx);
@@ -97,10 +111,7 @@ export class CommandPipeline<
       enrichment = { ...enrichment, ...(result as object) };
       if (s.name === stage) break;
     }
-    return Object.assign(
-      Object.create(base as object),
-      enrichment,
-    ) as TRegistry[TName];
+    return createStageContext(base as object, enrichment) as TRegistry[TName];
   }
 
   /**
@@ -110,7 +121,7 @@ export class CommandPipeline<
   async run(base: TBase): Promise<(TBase & TAccum) | null> {
     let enrichment: object = {};
     for (const s of this._stages) {
-      const stageCtx = Object.assign(Object.create(base as object), enrichment);
+      const stageCtx = createStageContext(base as object, enrichment);
       const result = await s.run(stageCtx);
       if (result === false) {
         await s.onFail?.(stageCtx);
@@ -118,8 +129,7 @@ export class CommandPipeline<
       }
       enrichment = { ...enrichment, ...(result as object) };
     }
-    return Object.assign(Object.create(base as object), enrichment) as TBase &
-      TAccum;
+    return createStageContext(base as object, enrichment) as TBase & TAccum;
   }
 
   /** All registered stage names in order. */
