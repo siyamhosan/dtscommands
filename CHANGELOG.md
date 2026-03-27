@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 2.0.2
+
+### Patch Changes
+
+- a7655ba: Pipeline RunUntil StageContext bug
+
 ## 2.0.1
 
 ### Patch Changes
