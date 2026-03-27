@@ -2,7 +2,7 @@ import { PermissionResolvable } from "discord.js";
 import { CooldownConfigOptions } from "../base/Cooldown";
 import Bot from "../library/Client";
 import { CommandPipeline, PipelineCtx } from "../pipeline/Pipeline";
-import { CommandContext } from "./Context";
+import { CommandCTX } from "./Context";
 import { ArgBuilder, ResolvedArgs } from "./args";
 
 export interface CommandLoaderContext {
@@ -46,7 +46,7 @@ export interface CommandRun<
   >,
   PipeLineUntil extends string = string,
 > {
-  ctx: CommandContext;
+  ctx: CommandCTX;
   args: ResolvedArgs;
   client: Bot;
   ptx?: PipelineCtx<PipeLine, PipeLineUntil>;
