@@ -1,5 +1,11 @@
 # bkash-payment-api
 
+## 2.0.1
+
+### Patch Changes
+
+- a5f3f47: Type Fix
+
 ## 2.0.0
 
 ### Major Changes
